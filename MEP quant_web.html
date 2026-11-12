@@ -18,9 +18,11 @@
       padding: 0;
     }
     
-    :root {
+:root {
       /* 모던 뉴트럴 & 인디고 팔레트 */
       --bg-body: #f8fafc;
+      --bg-grid-color: rgba(15, 23, 42, 0.04);
+      --bg-grid-size: 12px;
       --bg-card: #ffffff;
       --bg-sub: #f1f5f9;
       --bg-capsule: #e2e8f0;
@@ -50,6 +52,8 @@
 
     body.theme-dark {
       --bg-body: #0b0f19;
+      --bg-grid-color: rgba(56, 189, 248, 0.06);
+      --bg-grid-size: 16px;
       --bg-card: #131b2e;
       --bg-sub: #1a243b;
       --bg-capsule: #1f2c47;
@@ -74,6 +78,8 @@
 
     body.theme-warm {
       --bg-body: #f7f4ef;
+      --bg-grid-color: rgba(120, 105, 93, 0.05);
+      --bg-grid-size: 12px;
       --bg-card: #ffffff;
       --bg-sub: #f0ebe1;
       --bg-capsule: #e4dcce;
@@ -98,6 +104,8 @@
 
     body.theme-blue {
       --bg-body: #f0f5fa;
+      --bg-grid-color: rgba(2, 132, 199, 0.05);
+      --bg-grid-size: 12px;
       --bg-card: #ffffff;
       --bg-sub: #e6f0fa;
       --bg-capsule: #d5e5f5;
@@ -128,6 +136,10 @@
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, "Helvetica Neue", "Apple SD Gothic Neo", sans-serif;
       background-color: var(--bg-body);
+      background-image:
+        linear-gradient(to right, var(--bg-grid-color) 1px, transparent 1px),
+        linear-gradient(to bottom, var(--bg-grid-color) 1px, transparent 1px);
+      background-size: var(--bg-grid-size) var(--bg-grid-size);
       color: var(--text-main);
       padding: 24px 0; 
       min-width: 1080px; 
@@ -1286,7 +1298,7 @@
     }
   </style>
 </head>
-<body>
+<body class="theme-dark">
 
 <!-- 🚀 시작 전 엔지니어링 실무 고지 인트로 오버레이 -->
   <div id="introNoticeOverlay" class="intro-backdrop">
