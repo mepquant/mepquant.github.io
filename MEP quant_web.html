@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MEP Quant Desktop - 건축 기계설비 & 소방 엔지니어링 슈트</title>
 
   <!-- 파비콘 -->
@@ -173,6 +173,8 @@
       border-radius: var(--radius-card);
       max-width: 680px;
       width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
       padding: 30px 34px;
       box-shadow: var(--shadow-float);
       display: flex;
@@ -189,6 +191,7 @@
     }
     .intro-header-icon {
       font-size: 32px;
+      flex-shrink: 0;
     }
     .intro-header-title h2 {
       margin: 0;
@@ -203,9 +206,9 @@
       color: var(--text-sub);
       font-weight: 600;
     }
-    .intro-body-notice {
+.intro-body-notice {
       background: var(--bg-sub);
-      border-left: 4px solid #ef4444;
+      border-left: 4px solid var(--primary);
       border-radius: 8px;
       padding: 18px 20px;
       font-size: calc(12.8px * var(--font-scale));
@@ -262,6 +265,7 @@
       border-radius: 10px;
       object-fit: cover;
       box-shadow: 0 3px 8px rgba(37, 99, 235, 0.25);
+      flex-shrink: 0;
     }
     .header-title-box h1 {
       margin: 0;
@@ -379,6 +383,7 @@
       padding: 2.5px 8px;
       border-radius: var(--radius-pill);
       font-weight: 700;
+      white-space: nowrap;
     }
     .bld-collapse-btn {
       background: var(--bg-sub);
@@ -390,6 +395,8 @@
       cursor: pointer;
       font-weight: 700;
       transition: all 0.15s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
     .bld-collapse-btn:hover {
       background: var(--border-color);
@@ -407,11 +414,13 @@
       display: flex;
       flex-direction: column;
       gap: 12px;
+      min-width: 0;
     }
     .bld-field {
       display: flex;
       flex-direction: column;
       gap: 5px;
+      min-width: 0;
     }
     .bld-field label {
       font-size: calc(11.5px * var(--font-scale));
@@ -509,12 +518,14 @@
       color: var(--text-main);
       text-align: center;
       outline: none;
+      min-width: 0;
     }
     .floor-area-input-wrap {
       position: relative;
       display: flex;
       align-items: center;
       width: 100%;
+      min-width: 0;
     }
     .floor-area-input-wrap input {
       width: 100%;
@@ -616,6 +627,7 @@
       display: flex;
       flex-direction: column;
       gap: 14px;
+      min-width: 0;
     }
     .panel { display: none; }
     .panel.active { display: block; animation: fadeInTab 0.2s ease; }
@@ -634,6 +646,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       box-shadow: var(--shadow-card);
     }
     .mode-select-label {
@@ -652,6 +665,7 @@
       padding: 2px 7px;
       border-radius: var(--radius-pill);
       font-weight: 700;
+      white-space: nowrap;
     }
 
     .sub-calc-box {
@@ -735,6 +749,7 @@
       position: relative;
       display: inline-flex;
       align-items: center;
+      flex-shrink: 0;
     }
     .ctrl-input-wrap input {
       width: 100%;
@@ -758,6 +773,7 @@
     }
     .ctrl-select-wrap {
       width: 220px;
+      flex-shrink: 0;
     }
     .ctrl-select-wrap select {
       width: 100%;
@@ -783,6 +799,7 @@
       display: flex;
       flex-direction: column;
       gap: 16px;
+      min-width: 0;
     }
 
     .result-box-pc {
@@ -797,6 +814,8 @@
       justify-content: space-between;
       align-items: center;
       margin-bottom: 10px;
+      gap: 8px;
+      flex-wrap: wrap;
     }
     .result-title {
       font-size: calc(13px * var(--font-scale));
@@ -851,6 +870,8 @@
       padding: 12px 14px;
       max-height: 400px;
       overflow-y: auto;
+      word-break: keep-all;
+      overflow-wrap: anywhere;
     }
     body.theme-dark .sub-info {
       background: rgba(11, 15, 25, 0.6);
@@ -904,6 +925,7 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
+      gap: 10px;
       padding-bottom: 12px;
       border-bottom: 1px solid var(--border-light);
       margin-bottom: 14px;
@@ -922,6 +944,7 @@
       color: var(--text-muted);
       cursor: pointer;
       transition: color 0.15s ease;
+      flex-shrink: 0;
     }
     .modal-close-btn:hover { color: var(--text-main); }
     .manual-confirm-btn {
@@ -981,6 +1004,7 @@
       font-family: ui-monospace, SFMono-Regular, "Consolas", monospace;
       font-size: calc(11.5px * var(--font-scale));
       color: var(--text-main);
+      overflow-x: auto;
     }
     .manual-table {
       width: 100%;
@@ -1296,27 +1320,304 @@
     .mep-quick-chip strong {
       color: var(--primary);
     }
+
+    /* 📱 모바일 하단 실시간 요약 바 (데스크톱에서는 숨김) */
+    .mobile-sticky-bar {
+      display: none;
+    }
+
+    /* =================================================================
+       📱 태블릿 & 모바일 반응형 레이아웃 미디어 쿼리
+       ================================================================= */
+    @media (max-width: 1120px) {
+      body {
+        min-width: 0;
+        padding: 12px 12px 92px 12px;
+        overflow-x: hidden;
+      }
+      .pc-app-container {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+        gap: 12px;
+      }
+      .pc-workspace-split {
+        grid-template-columns: 1fr;
+        width: 100%;
+        gap: 14px;
+      }
+      .pc-sticky-sidebar {
+        position: static;
+      }
+      .bld-grid-pc {
+        grid-template-columns: 1fr 1fr;
+      }
+      .calc-modal-content {
+        width: 100% !important;
+        max-width: 96vw !important;
+      }
+
+      /* 모바일/태블릿 하단 고정 결과 요약 바 활성화 */
+      .mobile-sticky-bar {
+        display: flex;
+        position: fixed;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        z-index: 1500;
+        background: var(--bg-card);
+        border-top: 2px solid var(--primary);
+        box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.2);
+        padding: 10px 14px calc(10px + env(safe-area-inset-bottom));
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+      }
+      .mobile-sticky-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .mobile-sticky-label {
+        font-size: 10px;
+        font-weight: 800;
+        color: var(--primary);
+        display: block;
+        margin-bottom: 1px;
+      }
+      .mobile-sticky-val {
+        font-size: calc(13px * var(--font-scale));
+        font-weight: 800;
+        color: var(--text-main);
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      .mobile-sticky-btns {
+        display: flex;
+        gap: 6px;
+        flex-shrink: 0;
+      }
+      .mobile-sticky-btn {
+        border: 1px solid var(--border-color);
+        background: var(--bg-sub);
+        color: var(--text-main);
+        border-radius: var(--radius-pill);
+        padding: 7px 11px;
+        font-size: 11.5px;
+        font-weight: 800;
+        cursor: pointer;
+        white-space: nowrap;
+      }
+      .mobile-sticky-btn.primary {
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
+      }
+    }
+
+    @media (max-width: 900px) {
+      .pc-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+        padding: 14px 16px;
+      }
+      .header-actions {
+        width: 100%;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+      .btn-action-pill {
+        flex: 1 1 auto;
+        justify-content: center;
+        padding: 8px 10px;
+        font-size: calc(11.5px * var(--font-scale));
+      }
+      .pc-tab-bar {
+        grid-template-columns: repeat(3, 1fr);
+        border-radius: var(--radius-card);
+        gap: 5px;
+      }
+      .calc-wide-layout {
+        grid-template-columns: 1fr;
+        gap: 14px;
+      }
+    }
+
+    @media (max-width: 680px) {
+      body {
+        padding: 8px 8px 88px 8px;
+      }
+      .intro-backdrop {
+        padding: 12px;
+      }
+      .intro-modal-card {
+        padding: 20px 16px;
+        gap: 14px;
+      }
+      .header-title-box h1 {
+        font-size: calc(16px * var(--font-scale));
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .header-sub-text {
+        font-size: calc(11px * var(--font-scale));
+      }
+      .main-bld-card {
+        padding: 14px;
+      }
+      .bld-header-left {
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+      .bld-header-title {
+        font-size: calc(13px * var(--font-scale));
+      }
+      .bld-grid-pc {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+      /* 모바일에서 면적/인원(2열) 및 층수/층고(3열) 컴팩트 그리드 배치 */
+      .bld-grid-pc > .bld-col:nth-child(2) {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 8px;
+      }
+      .bld-grid-pc > .bld-col:nth-child(3) {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 8px;
+      }
+      .floor-row {
+        grid-template-columns: 1fr 1fr 1.25fr 24px;
+        gap: 4px;
+      }
+      .floor-area-input-wrap input {
+        min-width: 0;
+        font-size: 13px;
+      }
+      .pc-tab-bar {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 4px;
+        padding: 5px;
+      }
+      .tab-btn {
+        padding: 9px 6px;
+        font-size: calc(11.5px * var(--font-scale));
+        white-space: normal;
+        line-height: 1.25;
+      }
+      .mode-select-wrap {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+        padding: 12px 14px;
+      }
+      .sub-calc-box {
+        padding: 14px;
+      }
+      .input-grid-6col {
+        gap: 10px;
+      }
+      .input-group {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 5px;
+      }
+      .input-group label {
+        white-space: normal !important;
+        line-height: 1.35;
+      }
+      .ctrl-input-wrap,
+      .ctrl-select-wrap {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+      .ctrl-input-wrap input,
+      .ctrl-select-wrap select,
+      .bld-field input,
+      .bld-field select {
+        font-size: 15px;
+        padding: 9px 11px;
+      }
+      .result-box-pc {
+        padding: 14px 16px;
+      }
+      .result-value {
+        font-size: calc(15.5px * var(--font-scale));
+      }
+      .sub-info {
+        max-height: none;
+        padding: 10px 12px;
+      }
+      .modal-backdrop {
+        padding: 10px;
+      }
+      .modal-content,
+      .manual-content,
+      .calc-modal-content {
+        padding: 16px 14px !important;
+        max-height: 92vh;
+      }
+      .manual-body {
+        padding-right: 4px;
+      }
+      .manual-table,
+      .esp-table {
+        display: block;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+      }
+      .theme-grid,
+      .font-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 8px;
+      }
+      .mep-row-input {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+      .mep-output-list {
+        grid-template-columns: 1fr;
+        max-height: 220px;
+      }
+      .mep-quick-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    @media (max-width: 400px) {
+      .bld-grid-pc > .bld-col:nth-child(3) {
+        grid-template-columns: 1fr 1fr;
+      }
+      .bld-grid-pc > .bld-col:nth-child(3) > .bld-field:last-child {
+        grid-column: span 2;
+      }
+    }
   </style>
 </head>
 <body class="theme-dark">
 
-<!-- 🚀 시작 전 엔지니어링 실무 고지 인트로 오버레이 -->
+<!-- 🚀 시작 전 프로그램 안내 인트로 오버레이 -->
   <div id="introNoticeOverlay" class="intro-backdrop">
     <div class="intro-modal-card">
       <div class="intro-header">
-        <span class="intro-header-icon">⚠️</span>
+        <span class="intro-header-icon">⚡</span>
         <div class="intro-header-title">
-          <h2>엔지니어링 실무 고지 및 기술 한계 안내</h2>
-          <p>Engineering Notice & Technical Disclaimer</p>
+          <h2>MEP Quant Desktop 웹 엔지니어링 슈트</h2>
+          <p>건축기계설비 & 소방방재 실시간 산출 플랫폼</p>
         </div>
       </div>
       <div class="intro-body-notice">
-        <strong>[설계 지침서 기술 고지 사항]</strong><br><br>
-        본 엔지니어링 도구의 산출 결과는 대한설비공학회(SAREK) 핸드북 및 설계 가이드, 대한민국 국가건설기준(KDS) 및 소방청 화재안전성능기준(NFPC)에 근거한 <b>기술적 최소 권장 사양</b>입니다.<br><br>
-        최종 인허가 및 실시설계 도면 납품 시에는 현장 밸브·엘보 배관 실측 경로에 따른 Darcy-Weisbach / Hazen-Williams 정밀 수력 마찰계산과 관할 소방관서·도시가스 사업자의 고유 인허가 지침을 상호 대조 확인하시기 바랍니다.
+        • 본 엔지니어링 도구의 산출 결과는 대한설비공학회(SAREK) 핸드북 및 설계 가이드, 대한민국 국가건설기준(KDS) 및 소방청 화재안전성능기준(NFPC)에 근거한 기술적 권장 사양입니다.<br>
+        • 웹 버전에서는 프로젝트 저장기능이 제공되지 않습니다.<br>
+        • 건축 기본정보 입력시 전 공종 실시간 크로스 연동 : 냉난방·공조·위생·가스·소방 5대 설비가 자동 동기화됩니다(일부 필수 수기입력 계산식 제외)<br>
+        • 설계 지침서를 반드시 확인하시기 바랍니다<br>
+
+
       </div>
       <button type="button" class="intro-btn-start" onclick="var el = document.getElementById('introNoticeOverlay'); if(el) el.remove();">
-        위 안내 및 설계 지침을 확인하였으며 프로그램을 시작합니다
+        MEP Quant Desktop 시작하기
       </button>
     </div>
   </div>
@@ -2735,6 +3036,17 @@
   </div>
 </div>
 
+<!-- 📱 모바일/태블릿 전용 하단 실시간 요약 바 -->
+<div class="mobile-sticky-bar" id="mobileStickyBar">
+  <div class="mobile-sticky-info">
+    <span class="mobile-sticky-label">⚡ 실시간 추천 규격</span>
+    <div class="mobile-sticky-val" id="mobilePipeResult">-</div>
+  </div>
+  <div class="mobile-sticky-btns">
+    <button type="button" class="mobile-sticky-btn" onclick="copyResult()">복사</button>
+    <button type="button" class="mobile-sticky-btn primary" onclick="scrollToResult()">상세결과 ▼</button>
+  </div>
+</div>
 <!-- 🏢 모달: 건물 기본정보 및 수용인원 산정 기준 -->
 <div id="guide_bld_occ_modal" class="modal-backdrop" onclick="closeModal('guide_bld_occ_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
@@ -4125,7 +4437,6 @@
     </div>
   </div>
 </div>
-
 <script>
 // ----------------------------------------------------
 // 🚀 인트로 실무 고지 닫기 제어 함수
@@ -4363,7 +4674,7 @@ function renderFloorRows() {
         ${makeFloorOptions(row.endFloor)}
       </select>
       <div class="floor-area-input-wrap">
-        <input type="number" placeholder="면적" value="${row.area || ''}" oninput="updateFloorVal(${row.id}, 'area', this.value)">
+        <input type="number" inputmode="decimal" placeholder="면적" value="${row.area || ''}" oninput="updateFloorVal(${row.id}, 'area', this.value)">
         <span class="floor-unit-text">㎡</span>
       </div>
       <button type="button" class="floor-del-btn" onclick="removeFloorRow(${row.id})" title="삭제">&times;</button>
@@ -4655,7 +4966,7 @@ function updateDrainModeUI() {
  document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[type="number"]').forEach(input => {
     input.type = 'text';
-    input.setAttribute('inputmode', 'numeric');
+    input.setAttribute('inputmode', 'decimal');
     if (input.value) formatInputWithComma(input);
     input.addEventListener('input', (e) => {
       formatInputWithComma(e.target);
@@ -6204,8 +6515,18 @@ if (h > 0) {
 
   const pipeResEl = document.getElementById('pipeResult');
   const detailResEl = document.getElementById('detailResult');
+  const mobilePipeEl = document.getElementById('mobilePipeResult');
   if (pipeResEl) pipeResEl.innerText = size;
   if (detailResEl) detailResEl.innerText = detail;
+  if (mobilePipeEl) mobilePipeEl.innerText = size.replace(/\n/g, ' | ');
+}
+
+// ----------------------------------------------------
+// 📱 모바일 상세 결과 스크롤 이동 함수
+// ----------------------------------------------------
+function scrollToResult() {
+  const el = document.getElementById('resultBox');
+  if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 // ----------------------------------------------------
@@ -6679,7 +7000,5 @@ function setFontSize(sizeKey) {
 
 </body>
 </html>
-
-
 
 
