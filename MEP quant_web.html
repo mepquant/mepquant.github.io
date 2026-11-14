@@ -141,13 +141,44 @@
         linear-gradient(to bottom, var(--bg-grid-color) 1px, transparent 1px);
       background-size: var(--bg-grid-size) var(--bg-grid-size);
       color: var(--text-main);
-      padding: 24px 0; 
+      padding: 20px 0 0 0; 
       min-width: 1080px; 
       transition: background-color 0.25s ease, color 0.25s ease;
       letter-spacing: -0.015em;
-      min-height: 100vh;
+      height: 100vh;
+      height: 100dvh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
       line-height: 1.5;
       -webkit-font-smoothing: antialiased;
+    }
+
+    /* 상단 헤더 고정 영역 & 하단 독립 스크롤 영역 분리 */
+    .pc-header-wrap {
+      flex-shrink: 0;
+      width: 100%;
+      padding: 4px 0 14px 0;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
+    }
+
+    .pc-header-inner {
+      width: 1080px !important;
+      min-width: 1080px !important;
+      max-width: 1080px !important;
+      margin: 0 auto;
+    }
+
+    .pc-lower-wrap {
+      flex: 1;
+      min-height: 0;
+      width: 100%;
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-gutter: stable;
+      padding: 4px 0 24px 0;
     }
 
     .intro-backdrop {
@@ -1332,8 +1363,22 @@
     @media (max-width: 1120px) {
       body {
         min-width: 0;
-        padding: 12px 12px 92px 12px;
-        overflow-x: hidden;
+        padding: 12px 12px 0 12px;
+        overflow: hidden;
+      }
+      .pc-header-wrap {
+        padding: 0 0 12px 0;
+        overflow-y: visible;
+        scrollbar-gutter: auto;
+      }
+      .pc-header-inner {
+        width: 100% !important;
+        min-width: 0 !important;
+        max-width: 100% !important;
+      }
+      .pc-lower-wrap {
+        padding: 0 0 92px 0;
+        scrollbar-gutter: auto;
       }
       .pc-app-container {
         width: 100% !important;
@@ -1446,7 +1491,13 @@
 
     @media (max-width: 680px) {
       body {
-        padding: 8px 8px 88px 8px;
+        padding: 8px 8px 0 8px;
+      }
+      .pc-header-wrap {
+        padding: 0 0 10px 0;
+      }
+      .pc-lower-wrap {
+        padding: 0 0 88px 0;
       }
       .intro-backdrop {
         padding: 12px;
@@ -1622,35 +1673,41 @@
     </div>
   </div>
 
-<div class="pc-app-container">
-
-  <!-- 🌐 상단 데스크톱 네비게이션 헤더 -->
-  <header class="pc-header">
-    <div class="header-left">
-      <img src="icon.png" alt="logo" class="app-logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'48\' fill=\'%232563eb\'/><path d=\'M30 50h40M50 30v40\' stroke=\'%23fff\' stroke-width=\'8\'/></svg>'">
-      <div class="header-title-box">
-        <h1>
-          <span>MEP Quant Desktop</span>
-          <span class="header-tag">PC Suite v2.0</span>
-        </h1>
-        <div class="header-sub-text">건축기계설비 & 소방방재 실무 엔지니어링 계산 슈트 (SAREK / KDS / NFPC / KGS)</div>
+<!-- 🌐 상단 데스크톱 네비게이션 헤더 (하단과 분리된 고정 영역) -->
+<div class="pc-header-wrap">
+  <div class="pc-header-inner">
+    <header class="pc-header">
+      <div class="header-left">
+        <img src="icon.png" alt="logo" class="app-logo" onerror="this.onerror=null; this.src='data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><circle cx=\'50\' cy=\'50\' r=\'48\' fill=\'%232563eb\'/><path d=\'M30 50h40M50 30v40\' stroke=\'%23fff\' stroke-width=\'8\'/></svg>'">
+        <div class="header-title-box">
+          <h1>
+            <span>MEP Quant Desktop</span>
+            <span class="header-tag">PC Suite v2.0</span>
+          </h1>
+          <div class="header-sub-text">건축기계설비 & 소방방재 실무 엔지니어링 계산 슈트 (SAREK / KDS / NFPC / KGS)</div>
+        </div>
       </div>
-    </div>
-    <div class="header-actions">
-      <a role="button" class="btn-action-pill btn-excel-save" onclick="exportAllResultsToExcel()" onmouseup="this.blur()" tabindex="-1" title="22대 전 공종 종합 산출서 Excel 파일 내보내기">
-        <span>📥</span>
-        <span>모든 결과값 저장 </span>
-      </a>
-      <button type="button" class="btn-action-pill" onclick="openManual()" title="상세 설계기준 및 사용자 설명서">
-        <span>📖</span>
-        <span>설계 지침서</span>
-      </button>
-      <button type="button" class="btn-action-pill" onclick="openSettings()" title="테마 및 폰트 설정">
-        <span>⚙️</span>
-        <span>환경설정</span>
-      </button>
-    </div>
-  </header>
+      <div class="header-actions">
+        <a role="button" class="btn-action-pill btn-excel-save" onclick="exportAllResultsToExcel()" onmouseup="this.blur()" tabindex="-1" title="22대 전 공종 종합 산출서 Excel 파일 내보내기">
+          <span>📥</span>
+          <span>모든 결과값 저장 </span>
+        </a>
+        <button type="button" class="btn-action-pill" onclick="openManual()" title="상세 설계기준 및 사용자 설명서">
+          <span>📖</span>
+          <span>설계 지침서</span>
+        </button>
+        <button type="button" class="btn-action-pill" onclick="openSettings()" title="테마 및 폰트 설정">
+          <span>⚙️</span>
+          <span>환경설정</span>
+        </button>
+      </div>
+    </header>
+  </div>
+</div>
+
+<!-- 🖥️ 하단 독립 스크롤 작업 영역 -->
+<div class="pc-lower-wrap">
+<div class="pc-app-container">
 
   <!-- 🏢 대상물 기본 건축정보 마스터 카드 -->
   <div class="main-bld-card">
@@ -2385,7 +2442,7 @@
 
           <div class="input-grid-6col">
             <div class="input-group">
-              <label>상세 건물 용도</span>
+              <label>상세 건물 용도</label>
               </label>
               <div class="ctrl-select-wrap">
                 <select id="tank_use">
@@ -3034,6 +3091,7 @@
       </div>
     </aside>
   </div>
+</div>
 </div>
 
 <!-- 📱 모바일/태블릿 전용 하단 실시간 요약 바 -->
@@ -4073,6 +4131,7 @@
           • P<sub>1</sub>: 최저 사용(봉입)압력 (최고위 배관 정수두압 + 0.3~0.5 bar)<br>
           • P<sub>2</sub>: 안전밸브 분출 설정압력 (보일러/배관 최고허용압력 - 0.5 bar)
         </div>
+      </div>
 
       <!-- 3. 공조 및 환기덕트 설계 지침 -->
       <div class="manual-sec">
@@ -7005,7 +7064,29 @@ function closeManual(e) {
   }
 }
 
+function syncSettingsUI() {
+  const cls = document.body.classList;
+  const curTheme = cls.contains('theme-dark') ? 'dark'
+                 : cls.contains('theme-warm') ? 'warm'
+                 : cls.contains('theme-blue') ? 'blue'
+                 : 'light';
+  const curFont = cls.contains('font-sm') ? 'sm'
+                : cls.contains('font-lg') ? 'lg'
+                : cls.contains('font-xl') ? 'xl'
+                : 'md';
+
+  ['light', 'dark', 'warm', 'blue'].forEach(t => {
+    const btn = document.getElementById('theme_' + t);
+    if (btn) btn.classList.toggle('active', t === curTheme);
+  });
+  ['sm', 'md', 'lg', 'xl'].forEach(s => {
+    const btn = document.getElementById('font_' + s);
+    if (btn) btn.classList.toggle('active', s === curFont);
+  });
+}
+
 function openSettings() {
+  syncSettingsUI();
   const el = document.getElementById('settingsModal');
   if (el) el.classList.add('open');
 }
@@ -7017,27 +7098,31 @@ function closeSettings(e) {
 }
 
 function setTheme(themeName) {
-  document.body.className = document.body.className.replace(/theme-\w+/g, '');
+  document.body.classList.remove('theme-light', 'theme-dark', 'theme-warm', 'theme-blue');
   if (themeName !== 'light') {
     document.body.classList.add('theme-' + themeName);
   }
-  ['light', 'dark', 'warm', 'blue'].forEach(t => {
-    const btn = document.getElementById('theme_' + t);
-    if (btn) btn.classList.toggle('active', t === themeName);
-  });
+  try { localStorage.setItem('mep_theme', themeName); } catch (e) {}
+  syncSettingsUI();
 }
 
 function setFontSize(sizeKey) {
-  document.body.className = document.body.className.replace(/font-\w+/g, '');
+  document.body.classList.remove('font-sm', 'font-md', 'font-lg', 'font-xl');
   document.body.classList.add('font-' + sizeKey);
-  ['sm', 'md', 'lg', 'xl'].forEach(s => {
-    const btn = document.getElementById('font_' + s);
-    if (btn) btn.classList.toggle('active', s === sizeKey);
-  });
+  try { localStorage.setItem('mep_font', sizeKey); } catch (e) {}
+  syncSettingsUI();
 }
+
+(function initSettings() {
+  try {
+    const savedTheme = localStorage.getItem('mep_theme');
+    const savedFont = localStorage.getItem('mep_font');
+    if (savedTheme) setTheme(savedTheme);
+    if (savedFont) setFontSize(savedFont);
+  } catch (e) {}
+  syncSettingsUI();
+})();
 </script>
 
 </body>
 </html>
-
-
