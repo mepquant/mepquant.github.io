@@ -599,11 +599,11 @@
       line-height: 1.4;
     }
 
-    .pc-tab-bar {
+.pc-tab-bar {
       display: grid;
       grid-template-columns: repeat(5, 1fr) 140px;
-      background: var(--bg-card);
-      border: 1px solid var(--border-color);
+      background: var(--bg-capsule);
+      border: 1px solid var(--text-muted);
       padding: 5px;
       border-radius: var(--radius-pill);
       gap: 5px;
@@ -6635,43 +6635,920 @@ function copyResult() {
   navigator.clipboard.writeText(resultText).then(() => alert("산출 결과가 클립보드에 복사되었습니다."));
 }
 
-// ----------------------------------------------------
-// 📥 22대 전 공종 종합 산출서 Excel 파일 내보내기 (SheetJS)
-// ----------------------------------------------------
-function exportAllResultsToExcel() {
-  const bldUse = document.getElementById('main_bld_use').options[document.getElementById('main_bld_use').selectedIndex].text;
-  const totalArea = document.getElementById('main_bld_area').value || 0;
-  const totalOcc = document.getElementById('main_bld_occ').value || 0;
-  const areaVal = parseFloat(totalArea) || 0;
-  const useKey = document.getElementById('main_bld_use').value;
-  const preset = eqPeakLoadMap[useKey] || eqPeakLoadMap['office_gen'];
+// -------------------------------------------------------------------------
+// 📥 PC 전용 전 공종 세부 계산 항목 원클릭 종합 Excel(.xlsx) 내보내기 엔진
+// -------------------------------------------------------------------------
+async function exportAllResultsToExcel() {
+  try {
+    const fmtDec = (num, digits = 1) => {
+      if (num === null || num === undefined || isNaN(num) || num === "") return "0";
+      const factor = Math.pow(10, digits);
+      const rounded = Math.round(Number(num) * factor) / factor;
+      const parts = rounded.toString().split('.');
+      parts[0] = Number(parts[0]).toLocaleString();
+      return parts.length > 1 ? parts.join('.') : parts[0];
+    };
 
-  const coolUsrt = (areaVal * preset.coolW * 1.15 / 1000) / 3.516;
-  const heatKcal = areaVal * (preset.heatKcal + 20) * 1.15;
-  const gasM3 = (heatKcal / 1000) / 10.5;
+    const getStdFloorInfo = () => {
+      const totalArea = Math.max(0, parseFloat(document.getElementById('main_bld_area')?.value) || 0);
+      const row1F = floorDataList.find(r => {
+        const minF = Math.min(r.startFloor, r.endFloor);
+        const maxF = Math.max(r.startFloor, r.endFloor);
+        return minF <= 1 && maxF >= 1 && r.area > 0;
+      });
+      if (row1F && row1F.area > 0) {
+        return { area: row1F.area, label: "기준층 1F" };
+      }
+      const anyRow = floorDataList.find(r => r.area > 0);
+      if (anyRow && anyRow.area > 0) {
+        const fLabel = anyRow.startFloor === anyRow.endFloor ? `${anyRow.startFloor}F` : `${anyRow.startFloor}F~${anyRow.endFloor}F`;
+        return { area: anyRow.area, label: `${fLabel} (대체)` };
+      }
+      if (totalArea > 0) {
+        return { area: totalArea, label: "입력 연면적 기준" };
+      }
+      return { area: 0, label: "기준층 미설정" };
+    };
 
-  const summaryData = [
-    ["MEP Quant Desktop - 종합 엔지니어링 산출서 (대한설비공학회 SAREK 기준)"],
-    ["출력 일시", new Date().toLocaleString()],
-    ["건물 주용도", bldUse],
-    ["건물 연면적 (㎡)", formatNum(totalArea)],
-    ["산정 수용인원 (인)", formatNum(totalOcc)],
-    ["적용 기준", "대한설비공학회(SAREK) 핸드북 및 설계 가이드 / KDS / NFPC / KGS"],
-    [],
-    ["[ 공종 구분 ]", "산출 항목", "추천 규격 및 설계 용량", "비고 및 상세 사양"],
-    ["현재 작업 공종", document.getElementById('hvac_calc_mode')?.value || currentTab, document.getElementById('pipeResult').innerText, document.getElementById('detailResult').innerText],
-    ["1. 냉난방 설비", "중앙 열원 장비", `냉동기: ${formatDec(coolUsrt, 1)} USRT / 보일러: ${formatNum(heatKcal)} kcal/h`, `SAREK 부하원단위 (냉방 ${formatNum(preset.coolKcal)} / 난방 ${formatNum(preset.heatKcal)} kcal/h·㎡)`],
-    ["2. 공조환기 설비", "공조 환기 풍량", `기준층 환기 풍량: ${formatNum(areaVal * 2.7 * 5)} CMH`, "5회/h 환기 기준, 풍속 7.0m/s"],
-    ["3. 위생 배관설비", "저수조 및 급수", `물탱크: ${formatDec(totalOcc * 100 * 0.5 / 1000, 1)} ㎥ / 주배관 최소 50A~80A`, "1인 100L/일, 0.5일분 기준"],
-    ["4. 도시가스 설비", "가스 배관/계량기", `가스 소비량: ${formatDec(gasM3, 1)} ㎥/h (추천: G${gasM3 <= 10 ? '6' : '16~25'})`, "저압 Pole 공식 (압력강하 20mmAq)"],
-    ["5. 소방방재 설비", "소방 수원 및 설비", `법정 옥내소화전 수원: 5.2 ㎥ / SP 수원: 32.0 ㎥`, "NFPC 102/103 화재안전성능기준"]
-  ];
+    const getEquipMarginVal = () => {
+      const marginSelect = document.getElementById('eq_margin');
+      if (marginSelect && marginSelect.value === 'custom') {
+        const customPct = Math.max(0, parseFloat(document.getElementById('eq_margin_pct')?.value) || 15);
+        return 1 + (customPct / 100);
+      }
+      return parseFloat(marginSelect ? marginSelect.value : 1.15) || 1.15;
+    };
 
-  const ws = XLSX.utils.aoa_to_sheet(summaryData);
-  const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "종합산출서_SAREK");
-  XLSX.writeFile(wb, "MEP_Quant_Engineering_Report_SAREK.xlsx");
+    const calcSanLpm = () => {
+      const wb = Math.max(0, parseInt(document.getElementById('w_wash')?.value) || 0);
+      const sh = Math.max(0, parseInt(document.getElementById('w_shower')?.value) || 0);
+      const wcValve = Math.max(0, parseInt(document.getElementById('w_wc_valve')?.value) || 0);
+      const wcTank = Math.max(0, parseInt(document.getElementById('w_wc_tank')?.value) || 0);
+      const ur = Math.max(0, parseInt(document.getElementById('w_urinal')?.value) || 0);
+
+      const fu = (wb * 2) + (sh * 3) + (wcValve * 10) + (wcTank * 3) + (ur * 5);
+      const totalConnectedLpm = (wb * 12) + (sh * 15) + (wcValve * 100) + (wcTank * 15) + (ur * 20);
+
+      let lpm = 0;
+      if (fu > 0) {
+        if (fu <= 10) lpm = fu * 4.0;
+        else if (fu <= 30) lpm = 40 + (fu - 10) * 2.5;
+        else if (fu <= 100) lpm = 90 + (fu - 30) * 1.5;
+        else lpm = 195 + (fu - 100) * 0.8;
+      }
+
+      let simRate = 0;
+      if (totalConnectedLpm > 0 && lpm > 0) {
+        simRate = Math.min(100, (lpm / totalConnectedLpm) * 100).toFixed(1);
+      }
+      return { fu, lpm: Math.round(lpm), totalConnectedLpm, simRate, wb, sh, wcValve, wcTank, ur };
+    };
+
+    const dataRows = [];
+
+    // 1~2행: 전체 공종 종합 설계 계산서 헤더 및 출력일시
+    dataRows.push(["전체 공종 종합 설계 계산서 (PC Desktop Engineering Suite)", "", "", "", "", "", ""]);
+    dataRows.push(["출력일시", new Date().toLocaleString(), "", "", "", "", ""]);
+
+    // 3~4행: 대상물 기본 건축정보
+    const useSelect = document.getElementById('main_bld_use');
+    const useName = useSelect ? (useSelect.options[useSelect.selectedIndex]?.text || "") : "";
+    const bldArea = parseFloat(document.getElementById('main_bld_area')?.value) || 0;
+    const bldOcc = parseFloat(document.getElementById('main_bld_occ')?.value) || 0;
+    const bldUp = parseInt(document.getElementById('main_bld_up')?.value) || 0;
+    const bldDown = parseInt(document.getElementById('main_bld_down')?.value) || 0;
+    const bldH = document.getElementById('main_bld_h')?.value || "3.0";
+    const stdFloor = getStdFloorInfo();
+
+    dataRows.push(["대상물 기본 건축정보", "건물 주용도 및 상세 공간구분", "건물 연면적", "산정 수용인원", "건물 층수 구성", "기준 층고", "패널 연동 기준층"]);
+    dataRows.push([
+      "적용값",
+      useName,
+      `${formatNum(bldArea)} ㎡`,
+      `${formatNum(bldOcc)} 명`,
+      `지상 ${bldUp}층 / 지하 ${bldDown}층`,
+      `${bldH} m`,
+      `${stdFloor.label} (${formatNum(stdFloor.area)} ㎡)`
+    ]);
+    dataRows.push(["", "", "", "", "", "", ""]);
+
+    // 6행: 세부 계산 테이블 헤더
+    dataRows.push(["공종 구분", "계산 항목", "추천 선정 규격 및 용량", "설계 기본 파라미터", "상세 산출 공식 및 기술 근거", "추천 최소 규격", ""]);
+
+    // ==========================================
+    // [1] 냉난방 공종
+    // ==========================================
+    const eqArea = Math.max(0, parseFloat(document.getElementById('eq_area')?.value) || 0);
+    const uCoolKcal = parseFloat(document.getElementById('eq_unit_cool')?.value) || 0;
+    const uHeatKcal = parseFloat(document.getElementById('eq_unit_heat')?.value) || 0;
+    const uSteam = parseFloat(document.getElementById('eq_unit_steam')?.value) || 0;
+    const uHw = parseFloat(document.getElementById('eq_unit_hw')?.value) || 0;
+    const eqMargin = getEquipMarginVal();
+    const totalCoolKcal = eqArea * uCoolKcal * eqMargin;
+    const coolRt = Math.round(totalCoolKcal / 3024);
+    const coolW = Math.round(uCoolKcal * 1.163);
+    const heatKcalTotal = Math.round(eqArea * (uHeatKcal + uHw) * eqMargin);
+    const steamKgTotal = Math.round(eqArea * uSteam * eqMargin);
+
+    dataRows.push([
+      "냉난방",
+      "장비선정용 열원 용량 산출",
+      `냉온수기 ${formatNum(coolRt)} RT | 온수보일러 ${fmtDec(heatKcalTotal / 10000, 1)}만 kcal/h | 스팀 ${formatNum(steamKgTotal)} kg/h`,
+      `면적 ${formatNum(eqArea)}㎡, 단위냉방 ${formatNum(uCoolKcal)} kcal/h·㎡ (${formatNum(coolW)} W/㎡), 난방 ${formatNum(uHeatKcal)} kcal/h·㎡, 증기 ${fmtDec(uSteam, 2)} kg/h·㎡, 안전율 ${Math.round((eqMargin - 1) * 100)}%`,
+      `냉온수기: (A×qc×여유율)÷3024, 온수보일러: A×(qh+qhw)×여유율, 스팀: A×qs×여유율 (SAREK / KDS 31 20 피크부하)`,
+      `냉온수기 ${formatNum(coolRt)} RT / 온수보일러 ${formatNum(heatKcalTotal)} kcal/h / 스팀 ${formatNum(steamKgTotal)} kg/h`,
+      ""
+    ]);
+
+    const fcuType = document.getElementById('fcu_calc_type')?.value || 'load';
+    const fcuModelTypeKey = document.getElementById('fcu_model_type')?.value || 'exposed_floor';
+    const fcuModelSel = document.getElementById('fcu_model_type');
+    const fcuModelType = fcuModelSel ? (fcuModelSel.options[fcuModelSel.selectedIndex]?.text || "") : "";
+    let fcuKw = 0, fcuCmh = 0, fcuQty = 1;
+    if (fcuType === 'load') {
+      const a = Math.max(0, parseFloat(document.getElementById('fcu_load_area')?.value) || 0);
+      const unitKcal = parseFloat(document.getElementById('fcu_load_unit_w')?.value) || 250;
+      fcuQty = Math.max(1, parseInt(document.getElementById('fcu_load_qty')?.value) || 1);
+      fcuKw = (a * unitKcal * 1.163) / 1000;
+      fcuCmh = (a * unitKcal * 0.75) / (0.29 * 10);
+    } else if (fcuType === 'airflow') {
+      const qs = Math.max(0, parseFloat(document.getElementById('fcu_air_sensible_w')?.value) || 0);
+      const dt = parseFloat(document.getElementById('fcu_air_dt')?.value) || 10;
+      fcuQty = Math.max(1, parseInt(document.getElementById('fcu_air_qty')?.value) || 1);
+      const sensibleKcal = qs * 0.86;
+      fcuCmh = sensibleKcal / (0.29 * dt);
+      fcuKw = (sensibleKcal / 0.75) / 860;
+    } else {
+      const a = Math.max(0, parseFloat(document.getElementById('fcu_simple_area')?.value) || 0);
+      const r = parseFloat(document.getElementById('fcu_simple_rate')?.value) || 200;
+      fcuQty = Math.max(1, parseInt(document.getElementById('fcu_simple_qty')?.value) || 1);
+      fcuKw = (a * r) / 860;
+      fcuCmh = (a * r * 0.75) / (0.29 * 10);
+    }
+    const perKw = fcuKw / fcuQty;
+    const perCmh = fcuCmh / fcuQty;
+    const isAirflowMode = (fcuType === 'airflow');
+    let selFcu = null;
+    for (let i = 0; i < fcuCatalog.length; i++) {
+      const item = fcuCatalog[i];
+      if (item.coolKw >= perKw && (isAirflowMode ? item.cmh >= perCmh : true)) {
+        selFcu = item;
+        break;
+      }
+    }
+    if (!selFcu) selFcu = fcuCatalog[fcuCatalog.length - 1];
+    const fcuTagMap = {
+      exposed_floor: "FCU-FL",
+      cassette_4way: "FCU-C4",
+      cassette_1way: "FCU-C1",
+      duct_conceal: "FCU-DC"
+    };
+    const finalModelCode = `${fcuTagMap[fcuModelTypeKey] || "FCU-STD"}-${selFcu.cfm}`;
+    dataRows.push([
+      "",
+      "팬코일유니트(FCU) 선정",
+      `${finalModelCode} (${formatNum(selFcu.cfm)} CFM / ${fmtDec(selFcu.coolKw, 1)} kW) × ${formatNum(fcuQty)}대`,
+      `타입: ${fcuModelType.split('(')[0].trim()}, 대당부하: ${fmtDec(perKw, 2)} kW / ${formatNum(perCmh)} CMH (총 ${formatNum(fcuQty)}대)`,
+      `정격냉방 ${fmtDec(selFcu.coolKw, 1)}kW, 난방 ${fmtDec(selFcu.heatKw, 1)}kW, 지관 ${selFcu.pipe}(주배관 최소 25A 이상), 드레인 ${selFcu.drain}`,
+      `${finalModelCode} (${formatNum(selFcu.cfm)} CFM) × ${formatNum(fcuQty)}대`,
+      ""
+    ]);
+
+    const hUnit = document.getElementById('h_unit')?.value || 'kcal';
+    const rawHVal = parseFloat(document.getElementById('h_val')?.value) || 0;
+    let hUsrt = rawHVal;
+    let hDisplayKcal = rawHVal;
+    if (hUnit === 'kw') { hUsrt = rawHVal / 3.516; hDisplayKcal = rawHVal * 860; }
+    else if (hUnit === 'usrt') { hUsrt = rawHVal; hDisplayKcal = rawHVal * 3024; }
+    else { hUsrt = rawHVal / 3024; hDisplayKcal = rawHVal; }
+
+    const hDt = parseFloat(document.getElementById('h_dt')?.value) || 5;
+    const hLpm = (hUsrt * 3.516 * 60) / (4.186 * hDt);
+    const hM3h = hLpm * 60 / 1000;
+    const hVelSel = document.getElementById('h_water_vel_sel')?.value || '1.2';
+    let hVelVal = parseFloat(document.getElementById('h_water_vel')?.value) || 1.2;
+    if (hVelSel === 'auto') hVelVal = hLpm < 100 ? 0.8 : (hLpm < 600 ? 1.2 : 1.5);
+    const pipeDiaMm = hLpm > 0 ? Math.sqrt((4 * hM3h) / (3600 * Math.PI * hVelVal)) * 1000 : 0;
+    let pipeDiaRec = "50A (2\")";
+    if (pipeDiaMm <= 20) pipeDiaRec = "20A (3/4\")";
+    else if (pipeDiaMm <= 25) pipeDiaRec = "25A (1\")";
+    else if (pipeDiaMm <= 32) pipeDiaRec = "32A (1 1/4\")";
+    else if (pipeDiaMm <= 40) pipeDiaRec = "40A (1 1/2\")";
+    else if (pipeDiaMm <= 50) pipeDiaRec = "50A (2\")";
+    else if (pipeDiaMm <= 65) pipeDiaRec = "65A (2 1/2\")";
+    else if (pipeDiaMm <= 80) pipeDiaRec = "80A (3\")";
+    else if (pipeDiaMm <= 100) pipeDiaRec = "100A (4\")";
+    else if (pipeDiaMm <= 125) pipeDiaRec = "125A (5\")";
+    else if (pipeDiaMm <= 150) pipeDiaRec = "150A (6\")";
+    else if (pipeDiaMm <= 200) pipeDiaRec = "200A (8\")";
+    else if (pipeDiaMm <= 250) pipeDiaRec = "250A (10\")";
+    else if (pipeDiaMm <= 300) pipeDiaRec = "300A (12\")";
+    else if (pipeDiaMm <= 350) pipeDiaRec = "350A (14\")";
+    else if (pipeDiaMm <= 400) pipeDiaRec = "400A (16\")";
+    else if (pipeDiaMm <= 450) pipeDiaRec = "450A (18\")";
+    else if (pipeDiaMm <= 500) pipeDiaRec = "500A (20\")";
+    else pipeDiaRec = "500A 초과 규격";
+
+    dataRows.push([
+      "",
+      "냉온수 순환수배관 산정",
+      `냉온수 배관: ${hDisplayKcal <= 0 ? "0A (부하 없음)" : pipeDiaRec}`,
+      `부하 ${formatNum(hDisplayKcal)} kcal/h (${fmtDec(hUsrt, 1)} USRT), ΔT=${hDt}℃, 순환유량 약 ${fmtDec(hLpm, 1)} LPM, 적용유속 ${hVelSel === 'auto' ? `자동(${fmtDec(hVelVal, 1)} m/s)` : fmtDec(hVelVal, 1) + ' m/s'}`,
+      `LPM = (USRT×3.516×60)/(4.186×ΔT), 이론 계산내경 Φ${fmtDec(pipeDiaMm, 1)}mm, 수평 주배관 최소 25A 이상 권장 (KDS 31 20 20)`,
+      hDisplayKcal <= 0 ? "0A" : `냉온수 배관 ${pipeDiaRec}`,
+      ""
+    ]);
+
+    const drainMode = document.getElementById('drain_calc_mode')?.value || 'load';
+    const drainSlope = document.getElementById('drain_slope')?.value || '100';
+    let drainPipeRec = "25A (1\")";
+    let drainParamText = "";
+    if (drainMode === 'load') {
+      const du = document.getElementById('drain_load_unit')?.value || 'usrt';
+      const dv = Math.max(0, parseFloat(document.getElementById('drain_load_val')?.value) || 0);
+      let dUsrt = dv;
+      if (du === 'kcal') dUsrt = dv / 3024;
+      else if (du === 'kw') dUsrt = dv / 3.516;
+      if (dUsrt <= 4) drainPipeRec = "25A (1\")";
+      else if (dUsrt <= 12) drainPipeRec = "32A (1 1/4\")";
+      else if (dUsrt <= 30) drainPipeRec = "40A (1 1/2\")";
+      else if (dUsrt <= 65) drainPipeRec = "50A (2\")";
+      else if (dUsrt <= 140) drainPipeRec = "65A (2 1/2\")";
+      else if (dUsrt <= 260) drainPipeRec = "80A (3\")";
+      else drainPipeRec = "100A (4\") 이상";
+      drainParamText = `냉방부하 ${fmtDec(dUsrt, 1)} USRT, 예상 응축수 약 ${fmtDec(dUsrt * 1.8, 1)} L/h, 구배 1/${drainSlope}`;
+    } else {
+      const dCount = Math.max(1, parseInt(document.getElementById('drain_fcu_count')?.value) || 1);
+      const dRating = parseFloat(document.getElementById('drain_fcu_rating')?.value) || 1.0;
+      if (dCount <= 2) drainPipeRec = "25A (1\")";
+      else if (dCount <= 6) drainPipeRec = "32A (1 1/4\")";
+      else if (dCount <= 15) drainPipeRec = "40A (1 1/2\")";
+      else if (dCount <= 35) drainPipeRec = "50A (2\")";
+      else if (dCount <= 70) drainPipeRec = "65A (2 1/2\")";
+      else if (dCount <= 130) drainPipeRec = "80A (3\")";
+      else drainPipeRec = "100A (4\") 이상";
+      drainParamText = `FCU ${formatNum(dCount)}대 (대당 ${fmtDec(dRating, 1)} RT), 예상 응축수 약 ${fmtDec(dCount * dRating * 1.8, 1)} L/h, 구배 1/${drainSlope}`;
+    }
+    dataRows.push([
+      "",
+      "FCU 응축수 드레인 배관 산정",
+      `드레인 주관: ${drainPipeRec}`,
+      drainParamText,
+      `1 USRT당 응축수 약 1.8 L/h 기준, 개별지관 최소 20A(트랩 설치) / 2대 이상 횡주관 최소 25A(1") 이상 의무 준수`,
+      `드레인 주관 ${drainPipeRec}`,
+      ""
+    ]);
+
+    const hpLpm = parseFloat(document.getElementById('hp_lpm')?.value) || 0;
+    const hpLen = parseFloat(document.getElementById('hp_len')?.value) || 0;
+    const hpFric = parseFloat(document.getElementById('hp_fric')?.value) || 30;
+    const hpLocalPct = parseFloat(document.getElementById('hp_local')?.value) || 50;
+    const hpEquipHead = parseFloat(document.getElementById('hp_equip')?.value) || 10;
+    const hpFrictionM = (hpLen * 2 * hpFric * (1 + hpLocalPct / 100)) / 1000;
+    const hpTotalHeadM = hpLpm > 0 ? (hpFrictionM + hpEquipHead) : 0;
+    const hpMotorKw = (hpLpm * hpTotalHeadM * 0.163 * 1.15) / (1000 * 0.70);
+    dataRows.push([
+      "",
+      "냉온수 순환펌프 용량 및 양정 산출",
+      hpLpm <= 0 ? "0 kW (순환유량 대기)" : `순환펌프: ${fmtDec(hpTotalHeadM, 1)} m × ${formatNum(hpLpm)} LPM (${fmtDec(hpMotorKw, 1)} kW)`,
+      `설계유량 ${formatNum(hpLpm)} LPM, 편도직관 ${formatNum(hpLen)} m, 단위마찰 ${formatNum(hpFric)} mmAq/m, 국부저항 ${formatNum(hpLocalPct)}%, 장비저항 ${fmtDec(hpEquipHead, 1)} m`,
+      `H = (왕복길이×단위손실×(1+국부비율))/1000 + 장비저항, P = (Q×H×0.163×1.15)/(1000×0.70) [약 ${fmtDec(hpMotorKw * 1.36, 1)} HP]`,
+      hpLpm <= 0 ? "0 kW" : `${formatNum(hpLpm)} LPM × ${fmtDec(hpTotalHeadM, 1)} m (${fmtDec(hpMotorKw, 2)} kW)`,
+      ""
+    ]);
+
+    const stmKg = parseFloat(document.getElementById('h_steam_kg')?.value) || 0;
+    const stmPress = document.getElementById('h_steam_press')?.value || 'low';
+    const stmRet = document.getElementById('h_steam_ret')?.value || 'pump';
+    let steamPipeRec = "25A (1\")";
+    if (stmKg <= 50) steamPipeRec = "25A (1\")";
+    else if (stmKg <= 120) steamPipeRec = "32A (1 1/4\")";
+    else if (stmKg <= 200) steamPipeRec = "40A (1 1/2\")";
+    else if (stmKg <= 400) steamPipeRec = "50A (2\")";
+    else if (stmKg <= 700) steamPipeRec = "65A (2 1/2\")";
+    else if (stmKg <= 1200) steamPipeRec = "80A (3\")";
+    else steamPipeRec = "100A (4\") 이상";
+
+    let retPipeRec = "25A (1\")";
+    if (steamPipeRec.includes('100A')) retPipeRec = "65A (2 1/2\")";
+    else if (steamPipeRec.includes('80A')) retPipeRec = "50A (2\")";
+    else if (steamPipeRec.includes('65A') || steamPipeRec.includes('50A')) retPipeRec = "32A (1 1/4\")";
+    else retPipeRec = "25A (1\")";
+
+    dataRows.push([
+      "",
+      "스팀보일러 증기 & 응축수관",
+      stmKg <= 0 ? "0A (증기량 없음)" : `증기 ${steamPipeRec} / 환수 ${retPipeRec}`,
+      `소비량: ${formatNum(stmKg)} kg/h, 압력: ${stmPress === 'med' ? '중압 (0.4~0.7MPa)' : '저압 (0.1~0.3MPa)'}, 환수: ${stmRet === 'gravity' ? '중력자연환수' : '펌프압력환수'}`,
+      `SPPS 380 Sch 40 기준 증기 공급관 및 재증발 증기를 고려한 응축수 환수관 산정`,
+      stmKg <= 0 ? "0A" : `증기 ${steamPipeRec} / 환수 ${retPipeRec}`,
+      ""
+    ]);
+
+    const expWater = Math.max(0, parseFloat(document.getElementById('exp_water_vol')?.value) || 0);
+    const expRate = parseFloat(document.getElementById('exp_temp_range')?.value) || 0.025;
+    const p1 = Math.max(0, parseFloat(document.getElementById('exp_p1')?.value) || 1.5);
+    let p2 = parseFloat(document.getElementById('exp_p2')?.value) || 3.5;
+    if (p2 <= p1) p2 = p1 + 0.5;
+    const pDenom = 1 - ((p1 + 1.013) / (p2 + 1.013));
+    const expTankL = (pDenom > 0 && expWater > 0) ? (expWater * expRate) / pDenom : 0;
+    dataRows.push([
+      "",
+      "밀폐식 팽창탱크 용량 산정",
+      expWater <= 0 ? "0 L (계통 보유수량 대기)" : `팽창탱크 전용량: 약 ${formatNum(expTankL)} L (상용 ${formatNum(Math.ceil(expTankL / 50) * 50)} L)`,
+      `계통보유수량 ${formatNum(expWater)} L, P1=${fmtDec(p1, 1)} bar, P2=${fmtDec(p2, 1)} bar, 팽창률 ${(expRate * 100).toFixed(1)}% (팽창수량 ${fmtDec(expWater * expRate, 1)} L)`,
+      `공식: Vt = (Vw × β) / (1 - (P1+1.013)/(P2+1.013)) [KDS 31 25]`,
+      expWater <= 0 ? "0 L" : `밀폐형 ${formatNum(Math.ceil(expTankL / 50) * 50)} L 급`,
+      ""
+    ]);
+
+    // ==========================================
+    // [2] 공조덕트 공종
+    // ==========================================
+    const rArea = Math.max(0, parseFloat(document.getElementById('room_area')?.value) || 0);
+    const rHeight = Math.max(0, parseFloat(document.getElementById('room_height')?.value) || 2.7);
+    const rAch = Math.max(0, parseFloat(document.getElementById('room_ach')?.value) || 5);
+    const rCmh = rArea * rHeight * rAch;
+    const dVel = parseFloat(document.getElementById('duct_vel')?.value) || 7.0;
+    const dH = Math.max(0, parseFloat(document.getElementById('duct_h')?.value) || 0);
+    const dReqMm2 = (rCmh / (3600 * dVel)) * 1000000;
+    const dW = rCmh > 0 ? (dH > 0 ? Math.ceil((dReqMm2 / dH) / 50) * 50 : Math.ceil(Math.sqrt(dReqMm2) / 50) * 50) : 0;
+    const dH_eff = dH > 0 ? dH : dW;
+    const rActVel = (rCmh > 0 && dW > 0 && dH_eff > 0) ? (rCmh / (3600 * ((dW * dH_eff) / 1000000))) : 0;
+    const rEquivDia = (dW > 0 && dH_eff > 0) ? Math.round((1.30 * Math.pow(dW * dH_eff, 0.625)) / Math.pow(dW + dH_eff, 0.25)) : 0;
+
+    dataRows.push([
+      "공조덕트",
+      "룸 크기·용도별 자동계산",
+      `덕트 ${formatNum(dW)} × ${formatNum(dH_eff)} mm (산출풍량 ${formatNum(rCmh)} CMH)`,
+      `바닥면적 ${formatNum(rArea)} ㎡, 천장고 ${fmtDec(rHeight, 1)} m, 환기횟수 ${fmtDec(rAch, 1)} 회/h, 설계풍속 ${fmtDec(dVel, 1)} m/s`,
+      `Q = A × H × ACH, 덕트단면적 A = Q / (3600 × V), 실제통과풍속 약 ${rActVel.toFixed(2)} m/s, 원형환산 Φ${formatNum(rEquivDia)} mm`,
+      `덕트 ${formatNum(dW)} × ${formatNum(dH_eff)} mm`,
+      ""
+    ]);
+
+    const directCmh = Math.max(0, parseFloat(document.getElementById('duct_cmh')?.value) || 0) || rCmh;
+    const dReqMm2Direct = (directCmh / (3600 * dVel)) * 1000000;
+    const dW_direct = directCmh > 0 ? (dH > 0 ? Math.ceil((dReqMm2Direct / dH) / 50) * 50 : Math.ceil(Math.sqrt(dReqMm2Direct) / 50) * 50) : 0;
+    const dH_direct = dH > 0 ? dH : dW_direct;
+    const actVelDirect = (directCmh > 0 && dW_direct > 0 && dH_direct > 0) ? (directCmh / (3600 * ((dW_direct * dH_direct) / 1000000))) : 0;
+    dataRows.push([
+      "",
+      "풍량 입력 (CMH)",
+      `덕트 ${formatNum(dW_direct)} × ${formatNum(dH_direct)} mm`,
+      `설계풍량 ${formatNum(directCmh)} CMH, 세로 H=${dH > 0 ? dH : '정방형'} mm, 설계풍속 ${fmtDec(dVel, 1)} m/s`,
+      `연속방정식 Q = A × V, 마찰손실 일정법 기준 (KDS 31 25 20), 실제풍속 약 ${actVelDirect.toFixed(2)} m/s`,
+      `덕트 ${formatNum(dW_direct)} × ${formatNum(dH_direct)} mm`,
+      ""
+    ]);
+
+    const fanCmh = Math.max(0, parseFloat(document.getElementById('fan_cmh')?.value) || 0) || rCmh;
+    const fanPa = Math.max(0, parseFloat(document.getElementById('fan_press_pa')?.value) || 200);
+    const fanEff = parseFloat(document.getElementById('fan_eff')?.value) || 0.65;
+    const fanKw = ((fanCmh / 60) * (fanPa / 9.806) * 1.15) / (102 * 60 * fanEff);
+    const fanHp = fanKw * 1.36;
+    const recFanMotor = fanKw <= 0.4 ? "0.4 kW" : (fanKw <= 0.75 ? "0.75 kW" : (fanKw <= 1.5 ? "1.5 kW" : (fanKw <= 2.2 ? "2.2 kW" : Math.ceil(fanKw) + " kW")));
+    dataRows.push([
+      "",
+      "환기팬/송풍기 모터 동력(kW) 산정",
+      `송풍기 동력: ${fanKw.toFixed(2)} kW (약 ${fanHp.toFixed(2)} PS)`,
+      `풍량 ${formatNum(fanCmh)} CMH, 기외정압 ${formatNum(fanPa)} Pa, 팬효율 ${(fanEff * 100).toFixed(0)}%, 여유율 1.15`,
+      `공식: P = ((Q/60) × (Pt/9.806) × 1.15) / (102 × 60 × η) [기외정압 200 Pa 표준 관로손실]`,
+      fanCmh <= 0 ? "0 kW" : `${recFanMotor} (${fanKw.toFixed(2)} kW)`,
+      ""
+    ]);
+
+    const louverCmh = Math.max(0, parseFloat(document.getElementById('louver_cmh')?.value) || 0) || rCmh;
+    const louverVel = parseFloat(document.getElementById('louver_vel')?.value) || 2.5;
+    const louverRatio = parseFloat(document.getElementById('louver_ratio')?.value) || 0.4;
+    const louverUserW = parseFloat(document.getElementById('louver_w')?.value) || 0;
+    const louverAreaM2 = louverCmh > 0 ? (louverCmh / 3600) / (louverVel * louverRatio) : 0;
+    const louverAreaMm2 = louverAreaM2 * 1000000;
+    let louverW = 0, louverH = 0;
+    if (louverCmh > 0) {
+      louverW = louverUserW > 0 ? louverUserW : Math.sqrt(louverAreaMm2 * 1.5);
+      louverH = louverAreaMm2 / louverW;
+      louverW = Math.ceil(louverW / 50) * 50;
+      louverH = Math.ceil(louverH / 50) * 50;
+    }
+    dataRows.push([
+      "",
+      "외기(OA)/배기(EA) 루버 규격 산출",
+      `루버 ${formatNum(louverW)} × ${formatNum(louverH)} mm (개구율 ${Math.round(louverRatio * 100)}%)`,
+      `설계풍량 ${formatNum(louverCmh)} CMH, 통과풍속 ${fmtDec(louverVel, 1)} m/s, 유효개구율 ${Math.round(louverRatio * 100)}%`,
+      `유효단면적 A = (Q / 3600) / (V × 개구율) = 약 ${fmtDec(louverAreaM2, 3)} ㎡ (OA 우적 침투 방지 2.5 m/s 이하 권장)`,
+      `루버 ${formatNum(louverW)} × ${formatNum(louverH)} mm`,
+      ""
+    ]);
+
+    // ==========================================
+    // [3] 위생 공종 (급수/급탕 + 오배수/우수/정화조)
+    // ==========================================
+    dataRows.push(["위생", "[급수 / 급탕 설비]", "", "", "", "", ""]);
+
+    const sanLpmData = calcSanLpm();
+    let sanMainPipe = "15A (1/2\")";
+    let sanRetPipe = "15A (1/2\")";
+    if (sanLpmData.lpm <= 15) { sanMainPipe = "15A (1/2\")"; sanRetPipe = "15A (1/2\")"; }
+    else if (sanLpmData.lpm <= 35) { sanMainPipe = "20A (3/4\")"; sanRetPipe = "20A (3/4\")"; }
+    else if (sanLpmData.lpm <= 65) { sanMainPipe = "25A (1\")"; sanRetPipe = "20A (3/4\")"; }
+    else if (sanLpmData.lpm <= 120) { sanMainPipe = "32A (1 1/4\")"; sanRetPipe = "20A (3/4\")"; }
+    else if (sanLpmData.lpm <= 200) { sanMainPipe = "40A (1 1/2\")"; sanRetPipe = "25A (1\")"; }
+    else if (sanLpmData.lpm <= 380) { sanMainPipe = "50A (2\")"; sanRetPipe = "25A (1\")"; }
+    else if (sanLpmData.lpm <= 700) { sanMainPipe = "65A (2 1/2\")"; sanRetPipe = "32A (1 1/4\")"; }
+    else if (sanLpmData.lpm <= 1200) { sanMainPipe = "80A (3\")"; sanRetPipe = "40A (1 1/2\")"; }
+    else if (sanLpmData.lpm <= 2200) { sanMainPipe = "100A (4\")"; sanRetPipe = "50A (2\")"; }
+    else if (sanLpmData.lpm <= 3800) { sanMainPipe = "125A (5\")"; sanRetPipe = "50A (2\")"; }
+    else if (sanLpmData.lpm <= 6000) { sanMainPipe = "150A (6\")"; sanRetPipe = "65A (2 1/2\")"; }
+    else if (sanLpmData.lpm <= 12000) { sanMainPipe = "200A (8\")"; sanRetPipe = "65A (2 1/2\")"; }
+    else if (sanLpmData.lpm <= 20000) { sanMainPipe = "250A (10\")"; sanRetPipe = "80A (3\")"; }
+    else { sanMainPipe = "300A (12\") 이상"; sanRetPipe = "80A (3\") 이상"; }
+
+    const hasHotWater = (sanLpmData.wb > 0 || sanLpmData.sh > 0);
+    const hasColdOnly = (sanLpmData.wcValve > 0 || sanLpmData.wcTank > 0 || sanLpmData.ur > 0);
+    const showReturn = hasHotWater && !hasColdOnly;
+
+    dataRows.push([
+      "",
+      "급수/급탕 배관경 산출",
+      sanLpmData.fu === 0 ? "0A (수량 없음)" : (showReturn ? `공급관 ${sanMainPipe} / 반탕관 ${sanRetPipe}` : `공급관 ${sanMainPipe}`),
+      `기구부하단위 ${formatNum(sanLpmData.fu)} FU, 동시사용유량 약 ${formatNum(sanLpmData.lpm)} LPM (동시사용율 약 ${sanLpmData.simRate}%)`,
+      `Hunter의 WSFU 다이버시티 곡선 및 마찰저항선도 기준 관경 산출 (동관 Type L/M, STS 304)`,
+      sanLpmData.fu === 0 ? "0A" : `급수공급관 ${sanMainPipe}`,
+      ""
+    ]);
+
+    const tPeople = Math.max(0, parseFloat(document.getElementById('tank_people')?.value) || 0);
+    const tPer = Math.max(0, parseFloat(document.getElementById('tank_water_per')?.value) || 100);
+    const tDays = parseFloat(document.getElementById('tank_days')?.value) || 0.5;
+    const tM3 = (tPeople * tPer) / 1000;
+    const tHighTon = tM3 > 0 ? Math.max(1.0, tM3 * 0.15) : 0;
+    dataRows.push([
+      "",
+      "물탱크(저수조) 유효용량 산정",
+      `지하저수조: ${fmtDec(tM3 * tDays, 1)} ton | 고가수조: ${fmtDec(tHighTon, 1)} ton`,
+      `이용인원 ${formatNum(tPeople)} 명, 1인1일급수량 ${formatNum(tPer)} L/인·일, 저수보유 ${tDays} 일분 (1일 급수량 ${fmtDec(tM3, 1)} ㎥/일)`,
+      `공식: V = N × q × d (KDS 31 30 10 물탱크 유효용량 기준, 고가수조 1일 급수량의 15%)`,
+      `저수조 ${fmtDec(tM3 * tDays, 1)} ton / 고가수조 ${fmtDec(tHighTon, 1)} ton`,
+      ""
+    ]);
+
+    const pFlow = Math.max(0, parseFloat(document.getElementById('pump_flow')?.value) || 0) || sanLpmData.lpm;
+    const pHeadMode = document.getElementById('pump_head_mode')?.value || 'auto';
+    const pActualH = Math.max(Math.max(2.5, parseFloat(bldH) || 3.0), (Math.max(1, bldUp) + bldDown - 1) * Math.max(2.5, parseFloat(bldH) || 3.0));
+    const pAutoHead = Math.ceil(pActualH + (pActualH * 0.25) + 15);
+    const pHead = Math.max(0, parseFloat(document.getElementById('pump_head')?.value) || 0) || (pHeadMode === 'auto' ? pAutoHead : 0);
+    const pSplit = parseInt(document.getElementById('pump_split')?.value) || 2;
+    const pKw = ((pFlow / 1000) * pHead * 0.163 * 1.15) / 0.65;
+    dataRows.push([
+      "",
+      "가압(부스터) 펌프 용량 계산",
+      (pFlow <= 0 || pHead <= 0) ? "0 kW (유량/양정 대기)" : `부스터 펌프: 총 ${fmtDec(pKw, 2)} kW (약 ${fmtDec(pKw * 1.36, 1)} HP)`,
+      `설계유량 ${formatNum(pFlow)} LPM, 필요 전양정 ${formatNum(pHead)} m (${pHeadMode === 'auto' ? '건축높이 자동연동' : '수기입력'}), 대수분할 ${pSplit}대 병렬`,
+      `공식: P = (Q × H × 0.163 × 1.15) / η [대당 사양: 약 ${formatNum(Math.round(pFlow / pSplit))} LPM × ${formatNum(pHead)} m × ${fmtDec(pKw / pSplit, 2)} kW]`,
+      (pFlow <= 0 || pHead <= 0) ? "0 kW" : `대당 ${fmtDec(pKw / pSplit, 2)} kW × ${pSplit}대 (주${pSplit}+예비1)`,
+      ""
+    ]);
+
+    const nMode = document.getElementById('hw_n_mode')?.value || 'area';
+    let hwPeople = 0;
+    if (nMode === 'area') {
+      const hArea = Math.max(0, parseFloat(document.getElementById('hw_area')?.value) || 0);
+      const rate = parseFloat(document.getElementById('hw_area_rate')?.value) || 0.7;
+      const perM2 = parseFloat(document.getElementById('hw_area_per')?.value) || 9.5;
+      hwPeople = Math.round((hArea * rate) / perM2);
+    } else if (nMode === 'fixture') {
+      const shCount = Math.max(0, parseInt(document.getElementById('hw_fix_shower')?.value) || 0);
+      const skCount = Math.max(0, parseInt(document.getElementById('hw_fix_sink')?.value) || 0);
+      hwPeople = (shCount * 4) + (skCount * 3);
+    } else if (nMode === 'unit') {
+      const uTypePer = parseFloat(document.getElementById('hw_unit_type')?.value) || 3.0;
+      const uCount = Math.max(0, parseInt(document.getElementById('hw_unit_count')?.value) || 0);
+      hwPeople = Math.round(uCount * uTypePer);
+    } else {
+      hwPeople = Math.max(0, parseFloat(document.getElementById('hw_people')?.value) || 0);
+    }
+
+    const hwPer = Math.max(0, parseFloat(document.getElementById('hw_per_capita')?.value) || 70);
+    const hwDt = parseFloat(document.getElementById('hw_dt')?.value) || 45;
+    const hwHr = Math.max(1, parseFloat(document.getElementById('hw_heat_hr')?.value) || 3);
+    const hwKcalH = Math.round(((hwPeople * hwPer) * hwDt) / hwHr);
+    dataRows.push([
+      "",
+      "급탕 보일러·온수 가열기 용량 산출",
+      `가열기 용량: 약 ${fmtDec(hwKcalH / 860, 1)} kW (${formatNum(hwKcalH)} kcal/h)`,
+      `급탕인원 ${formatNum(hwPeople)} 명, 1인 급탕량 ${formatNum(hwPer)} L/일, 온도차 ΔT=${hwDt}℃, 가열시간 ${hwHr} hr`,
+      `공식: Qh = (N × qd × ΔT) / T (KDS 31 30 15), 팽창관: ${hwKcalH <= 50000 ? "20A" : (hwKcalH <= 150000 ? "25A" : (hwKcalH <= 300000 ? "32A" : (hwKcalH <= 600000 ? "40A" : (hwKcalH <= 1200000 ? "50A" : "65A+"))))}`,
+      `가열기 ${fmtDec(hwKcalH / 860, 1)} kW (${formatNum(hwKcalH)} kcal/h)`,
+      ""
+    ]);
+
+    dataRows.push(["", "[오수 / 배수 / 우수 설비]", "", "", "", "", ""]);
+
+    const soilWc = Math.max(0, parseInt(document.getElementById('d_soil_wc')?.value) || 0);
+    const soilUr = Math.max(0, parseInt(document.getElementById('d_soil_urinal')?.value) || 0);
+    const soilSlope = document.getElementById('d_soil_slope')?.value || '100';
+    const totalSoilDfu = (soilWc * 6) + (soilUr * 3);
+    let soilDiaRec = "미입력";
+    if (totalSoilDfu > 0) {
+      if (soilWc > 0) {
+        if (soilSlope === '50') {
+          if (totalSoilDfu <= 250) soilDiaRec = "100A (4\")";
+          else if (totalSoilDfu <= 500) soilDiaRec = "125A (5\")";
+          else if (totalSoilDfu <= 950) soilDiaRec = "150A (6\")";
+          else if (totalSoilDfu <= 2200) soilDiaRec = "200A (8\")";
+          else if (totalSoilDfu <= 4200) soilDiaRec = "250A (10\")";
+          else soilDiaRec = "300A (12\") 이상";
+        } else {
+          if (totalSoilDfu <= 180) soilDiaRec = "100A (4\")";
+          else if (totalSoilDfu <= 360) soilDiaRec = "125A (5\")";
+          else if (totalSoilDfu <= 700) soilDiaRec = "150A (6\")";
+          else if (totalSoilDfu <= 1600) soilDiaRec = "200A (8\")";
+          else if (totalSoilDfu <= 3200) soilDiaRec = "250A (10\")";
+          else soilDiaRec = "300A (12\") 이상";
+        }
+      } else {
+        if (totalSoilDfu <= 26) soilDiaRec = "50A (2\")";
+        else if (totalSoilDfu <= 60) soilDiaRec = "75A (3\")";
+        else if (totalSoilDfu <= 180) soilDiaRec = "100A (4\")";
+        else if (totalSoilDfu <= 360) soilDiaRec = "125A (5\")";
+        else soilDiaRec = "150A (6\") 이상";
+      }
+    }
+    dataRows.push([
+      "",
+      "오수 배관경 산출 (대변기·소변기 DFU)",
+      `오수관: ${soilDiaRec}`,
+      `대변기 ${formatNum(soilWc)}대 (6 DFU), 소변기 ${formatNum(soilUr)}대 (3 DFU), 총 ${formatNum(totalSoilDfu)} DFU, 구배 1/${soilSlope}`,
+      `배수기구부하단위(DFU) 수력허용량 준수 (대변기 연결 오수배관은 막힘 방지 최소 100A(4") 의무 규정 준수)`,
+      `오수관 ${soilDiaRec}`,
+      ""
+    ]);
+
+    const wasteWash = Math.max(0, parseInt(document.getElementById('d_waste_wash')?.value) || 0);
+    const wasteBath = Math.max(0, parseInt(document.getElementById('d_waste_bath')?.value) || 0);
+    const wasteSink = Math.max(0, parseInt(document.getElementById('d_waste_sink')?.value) || 0);
+    const wasteSlope = document.getElementById('d_waste_slope')?.value || '100';
+    const totalWasteDfu = (wasteWash * 2) + (wasteBath * 3) + (wasteSink * 3);
+    let wasteDiaRec = "미입력";
+    if (totalWasteDfu > 0) {
+      if (wasteSink > 0) {
+        if (totalWasteDfu <= 60) wasteDiaRec = "75A (3\")";
+        else if (totalWasteDfu <= 160) wasteDiaRec = "100A (4\")";
+        else if (totalWasteDfu <= 360) wasteDiaRec = "125A (5\")";
+        else if (totalWasteDfu <= 700) wasteDiaRec = "150A (6\")";
+        else if (totalWasteDfu <= 1600) wasteDiaRec = "200A (8\")";
+        else wasteDiaRec = "250A (10\") 이상";
+      } else {
+        if (totalWasteDfu <= 5) wasteDiaRec = "40A (1 1/2\")";
+        else if (totalWasteDfu <= 26) wasteDiaRec = "50A (2\")";
+        else if (totalWasteDfu <= 60) wasteDiaRec = "75A (3\")";
+        else if (totalWasteDfu <= 160) wasteDiaRec = "100A (4\")";
+        else if (totalWasteDfu <= 360) wasteDiaRec = "125A (5\")";
+        else if (totalWasteDfu <= 700) wasteDiaRec = "150A (6\")";
+        else wasteDiaRec = "200A (8\") 이상";
+      }
+    }
+    dataRows.push([
+      "",
+      "배수(잡배수) 배관경 산출 (세면·욕조·싱크 DFU)",
+      `잡배수관: ${wasteDiaRec}`,
+      `세면기 ${formatNum(wasteWash)}대 (2 DFU), 욕조/샤워 ${formatNum(wasteBath)}대 (3 DFU), 청소싱크 ${formatNum(wasteSink)}대 (3 DFU), 총 ${formatNum(totalWasteDfu)} DFU, 구배 1/${wasteSlope}`,
+      `DFU 부하단위 산정 (청소싱크 포함 계통은 슬러지·토사 퇴적 방지 최소 75A(3") 의무 규정 준수)`,
+      `잡배수관 ${wasteDiaRec}`,
+      ""
+    ]);
+
+    const rainA = Math.max(0, parseFloat(document.getElementById('rain_area')?.value) || 0);
+    const rainInt = parseFloat(document.getElementById('rain_intensity')?.value) || 100;
+    const rainLpm = Math.round((rainA * rainInt) / 60);
+    let rainPipeRec = "100A (4\")";
+    if (rainLpm <= 120) rainPipeRec = "75A (3\")";
+    else if (rainLpm <= 280) rainPipeRec = "100A (4\")";
+    else if (rainLpm <= 600) rainPipeRec = "125A (5\")";
+    else if (rainLpm <= 1100) rainPipeRec = "150A (6\")";
+    else if (rainLpm <= 2400) rainPipeRec = "200A (8\")";
+    else if (rainLpm <= 4500) rainPipeRec = "250A (10\")";
+    else if (rainLpm <= 7500) rainPipeRec = "300A (12\")";
+    else if (rainLpm <= 12000) rainPipeRec = "350A (14\")";
+    else rainPipeRec = "400A (16\") 이상";
+    const drainCnt = Math.max(2, Math.ceil(rainA / 200));
+    dataRows.push([
+      "",
+      "우수 배관경 & 루프드레인 산정",
+      `우수 입상관: ${rainPipeRec} (우수량 약 ${formatNum(rainLpm)} LPM)`,
+      `지붕 수압 투영면적 ${formatNum(rainA)} ㎡, 설계 강우강도 ${rainInt} mm/h, 유출량 약 ${formatNum(rainLpm)} LPM`,
+      `공식: Q = (A × I) / 60 (KDS 31 30 우수배관 기준), 루프드레인 100A 기준 최소 ${formatNum(drainCnt)}개소 분산 배치`,
+      `우수관 ${rainPipeRec} / 루프드레인 100A × ${formatNum(drainCnt)}개소`,
+      ""
+    ]);
+
+    const sepKey = document.getElementById('septic_use')?.value || 'office';
+    const sepSpec = septicRateMap[sepKey] || septicRateMap['office'];
+    const sepArea = Math.max(0, parseFloat(document.getElementById('septic_area')?.value) || 0);
+    const sepPersons = Math.ceil(sepArea * sepSpec.rate);
+    const sepSewageM3 = sepSpec.isResidential ? (sepPersons * 0.2) : ((sepArea * sepSpec.sewageLPerM2) / 1000);
+    dataRows.push([
+      "",
+      "정화조 / 오수처리시설 인원산정",
+      `정화조 처리대상: ${formatNum(sepPersons)} 인용 (${sepSewageM3.toFixed(1)} ㎥/일)`,
+      `산정 바닥면적 ${formatNum(sepArea)} ㎡, 환경부 고시 용도: ${sepSpec.desc}, 계수 ${sepSpec.rate}`,
+      `공식: N = ${sepSpec.rate} × A (환경부 고시 제2025-165호 기준)`,
+      `정화조 ${formatNum(sepPersons)} 인용`,
+      ""
+    ]);
+
+    // ==========================================
+    // [4] 가스 공종
+    // ==========================================
+    const gPipeUnit = document.getElementById('g_pipe_unit')?.value || 'mcal';
+    const gPipeInput = Math.max(0, parseFloat(document.getElementById('g_mcal')?.value) || 0);
+    let gMcal = gPipeInput;
+    if (gPipeUnit === 'kcal') gMcal = gPipeInput / 1000;
+    else if (gPipeUnit === 'kw') gMcal = (gPipeInput * 860) / 1000;
+    const gLen = Math.max(0, parseFloat(document.getElementById('g_len')?.value) || 0);
+    const gFlow = gMcal / 10.5;
+    const eqFlowVal = gLen > 0 ? gFlow * Math.sqrt(gLen / 10) : 0;
+    let gasPipeRec = "15A (1/2\")";
+    if (eqFlowVal <= 3.2) gasPipeRec = "15A (1/2\")";
+    else if (eqFlowVal <= 7.8) gasPipeRec = "20A (3/4\")";
+    else if (eqFlowVal <= 14.5) gasPipeRec = "25A (1\")";
+    else if (eqFlowVal <= 28.0) gasPipeRec = "32A (1 1/4\")";
+    else if (eqFlowVal <= 42.0) gasPipeRec = "40A (1 1/2\")";
+    else if (eqFlowVal <= 78.0) gasPipeRec = "50A (2\")";
+    else if (eqFlowVal <= 135.0) gasPipeRec = "65A (2 1/2\")";
+    else if (eqFlowVal <= 230.0) gasPipeRec = "80A (3\")";
+    else if (eqFlowVal <= 450.0) gasPipeRec = "100A (4\")";
+    else if (eqFlowVal <= 800.0) gasPipeRec = "125A (5\")";
+    else if (eqFlowVal <= 1300.0) gasPipeRec = "150A (6\")";
+    else if (eqFlowVal <= 2800.0) gasPipeRec = "200A (8\")";
+    else gasPipeRec = "250A (10\") 이상";
+
+    dataRows.push([
+      "가스",
+      "저압 도시가스 배관경 산출",
+      (gMcal <= 0 || gLen <= 0) ? "0A (열량/상당길이 미입력)" : `도시가스 배관: ${gasPipeRec}`,
+      `소비열량 ${fmtDec(gMcal, 1)} Mcal/h, 배관 상당길이 ${formatNum(gLen)} m, 가스소비유량 약 ${fmtDec(gFlow, 2)} ㎥/h`,
+      `KGS Code FU551 저압 Pole 공식 (압력 1.0~2.5 kPa, 비중 S=0.65, 발열량 10,500 kcal/㎥, 환산유량 ${fmtDec(eqFlowVal, 1)} ㎥/h)`,
+      (gMcal <= 0 || gLen <= 0) ? "0A" : `가스배관 ${gasPipeRec}`,
+      ""
+    ]);
+
+    const gMeterUnit = document.getElementById('g_meter_unit')?.value || 'kcal';
+    let gMeterVal = Math.max(0, parseFloat(document.getElementById('g_meter_val')?.value) || 0);
+    if (gMeterVal <= 0 && gMcal > 0) {
+      gMeterVal = (gMeterUnit === 'mcal') ? gMcal : (gMeterUnit === 'kw' ? (gMcal * 1000 / 860) : gMcal * 1000);
+    }
+    let kcalForMeter = gMeterVal;
+    if (gMeterUnit === 'kw') kcalForMeter = gMeterVal * 860;
+    else if (gMeterUnit === 'mcal') kcalForMeter = gMeterVal * 1000;
+
+    const gMeterM3 = kcalForMeter / 10500;
+    let meterGradeName = "G4";
+    if (gMeterM3 <= 2.5) meterGradeName = "G1.6";
+    else if (gMeterM3 <= 4.0) meterGradeName = "G2.5";
+    else if (gMeterM3 <= 6.0) meterGradeName = "G4";
+    else if (gMeterM3 <= 10.0) meterGradeName = "G6";
+    else if (gMeterM3 <= 16.0) meterGradeName = "G10";
+    else if (gMeterM3 <= 25.0) meterGradeName = "G16";
+    else if (gMeterM3 <= 40.0) meterGradeName = "G25";
+    else meterGradeName = "G40 이상";
+
+    dataRows.push([
+      "",
+      "가스계량기(미터기) 등급 선정",
+      kcalForMeter <= 0 ? "G0 등급 (열량 대기)" : `가스미터 등급: ${meterGradeName} (소비유량 ${fmtDec(gMeterM3, 2)} ㎥/h)`,
+      `소비열량 ${formatNum(kcalForMeter)} kcal/h, 도시가스(LNG) 유량 약 ${fmtDec(gMeterM3, 2)} ㎥/h`,
+      `KGS Code 및 계량기 정격용량(G1.6: 2.5㎥/h, G2.5: 4.0㎥/h, G4: 6.0㎥/h, G6: 10.0㎥/h, G10: 16.0㎥/h, G16: 25.0㎥/h, G25: 40.0㎥/h, G40+)`,
+      kcalForMeter <= 0 ? "G0" : `${meterGradeName} 등급`,
+      ""
+    ]);
+
+    // ==========================================
+    // [5] 소방 공종
+    // ==========================================
+    const fArea = Math.max(0, parseFloat(document.getElementById('f_bld_area')?.value) || 0) || bldArea;
+    const fUp = Math.max(0, parseInt(document.getElementById('f_floors_up')?.value) || 0) || bldUp;
+    const fDown = Math.max(0, parseInt(document.getElementById('f_floors_down')?.value) || 0) || bldDown;
+    const totalF = fUp + fDown;
+    const fBldUseSel = document.getElementById('f_bld_use');
+    const fBldUse = fBldUseSel ? fBldUseSel.value : 'office';
+    const fBldUseDesc = fBldUseSel ? (fBldUseSel.options[fBldUseSel.selectedIndex]?.text || "") : "";
+
+    const fireDiagItems = [];
+    fireDiagItems.push("• 소화기구 (보행거리 20m 이내, 바닥 1.5m 이하, 33㎡이상 구획실 추가)");
+    if ((fBldUse === 'apt' && fArea >= 1500) || fArea >= 3000 || (fUp >= 4 && fArea >= 1000)) {
+      fireDiagItems.push("• 옥내소화전설비 (연면적 기준 / 방수구 40A)");
+    }
+    if (fBldUse === 'edu' && fUp >= 6) {
+      fireDiagItems.push("• 스프링클러 제외 특례 (학교 교사동 6층 이상 제외 / 기숙사 5,000㎡ 이상 의무)");
+    } else if (fUp >= 6 || (fBldUse === 'retail' && fArea >= 5000) || (['hotel', 'hospital', 'elder'].includes(fBldUse) && fArea >= 600)) {
+      fireDiagItems.push("• 스프링클러설비 (지상 6층 이상 전층 의무 또는 용도별 기준)");
+    }
+    if (fUp >= 6 || fArea >= 1000 || (fBldUse === 'edu' && fArea >= 2000)) {
+      fireDiagItems.push("• 자동화재탐지설비 (자탐)");
+    }
+    if (fArea >= 3500 || fUp >= 11 || fDown >= 3) {
+      fireDiagItems.push("• 비상방송설비 (연면적 3,500㎡/11층 이상)");
+    }
+    fireDiagItems.push("• 피난구/통로 유도등");
+    if (fUp >= 5 && fArea >= 3000) {
+      fireDiagItems.push("• 비상조명등설비");
+    }
+    if (totalF >= 7 || (fUp >= 5 && fArea >= 6000) || fDown >= 3) {
+      fireDiagItems.push("• 연결송수관설비 (소방대 전용 주배관 100A, 방수구 65A)");
+    }
+    if (fUp >= 11 || (fDown >= 3 && fArea >= 1000)) {
+      fireDiagItems.push("• 비상콘센트설비 (11층 이상 전층)");
+    }
+    if (fUp >= 11 || (['retail', 'culture'].includes(fBldUse) && fArea >= 1000)) {
+      fireDiagItems.push("• 제연설비 (부속실/대공간)");
+    }
+
+    dataRows.push([
+      "소방",
+      "건물별 법정 소방시설 진단",
+      `법정 필수 소방시설 대상 (${fireDiagItems.length}개 설비)`,
+      `건물용도: ${fBldUseDesc}, 연면적 ${formatNum(fArea)} ㎡, 지상 ${fUp}층 / 지하 ${fDown}층`,
+      "소방시설 설치 및 관리에 관한 법률 시행령 [별표 4] 특정소방대상물의 소방시설 설치기준 진단",
+      fireDiagItems.join("\n"),
+      ""
+    ]);
+
+    const spCount = Math.max(0, parseInt(document.getElementById('f_sp_count')?.value) || 0);
+    const hydCount = Math.max(0, parseInt(document.getElementById('f_hyd_count')?.value) || 0);
+    const spipeCount = Math.max(0, parseInt(document.getElementById('f_spipe_count')?.value) || 0);
+    let spDiaText = "미입력";
+    if (spCount > 0) {
+      if (spCount <= 2) spDiaText = "25A (1\")";
+      else if (spCount <= 3) spDiaText = "32A (1 1/4\")";
+      else if (spCount <= 5) spDiaText = "40A (1 1/2\")";
+      else if (spCount <= 10) spDiaText = "50A (2\")";
+      else if (spCount <= 30) spDiaText = "65A (2 1/2\")";
+      else if (spCount <= 60) spDiaText = "80A (3\")";
+      else if (spCount <= 100) spDiaText = "100A (4\")";
+      else if (spCount <= 160) spDiaText = "125A (5\")";
+      else spDiaText = "150A (6\") 이상";
+    }
+    let hydRiserText = "미입력";
+    if (hydCount > 0) {
+      if (hydCount === 1) hydRiserText = "50A (2\")";
+      else if (hydCount <= 3) hydRiserText = "65A (2 1/2\")";
+      else if (hydCount <= 6) hydRiserText = "80A (3\")";
+      else if (hydCount <= 10) hydRiserText = "100A (4\")";
+      else hydRiserText = "125A (5\") 이상";
+    }
+    let standDiaText = "미입력";
+    if (spipeCount > 0) {
+      standDiaText = (spipeCount >= 6) ? "주배관 125A (5\")" : "주배관 100A (4\")";
+    }
+    dataRows.push([
+      "",
+      "소방 배관경 산출",
+      `SP ${spDiaText} | 소화전 ${hydRiserText} | 연송 ${standDiaText}`,
+      `SP 헤드 ${formatNum(spCount)}개, 소화전 방수구 ${formatNum(hydCount)}개소, 연결송수관 방수구 ${formatNum(spipeCount)}개소`,
+      `NFPC 103 별표1(규약배관), NFPC 102(옥내소화전 유속 4.0m/s 이하), NFPC 502 제4조(연송 주배관 최소 100A 의무)`,
+      `SP ${spDiaText} / 소화전 ${hydRiserText} / 연송 ${standDiaText}`,
+      ""
+    ]);
+
+    const extBase = parseFloat(document.getElementById('ext_use')?.value) || 200;
+    const extA = Math.max(0, parseFloat(document.getElementById('ext_area')?.value) || 0);
+    const extFireproof = (document.getElementById('ext_struct')?.value === 'fireproof');
+    const extEffBase = extFireproof ? (extBase * 2) : extBase;
+    const extUnits = Math.ceil(extA / extEffBase);
+    const extQty = extA > 0 ? Math.max(1, Math.ceil(extUnits / 3)) : 0;
+    dataRows.push([
+      "",
+      "소화기구 능력단위·배치 산출",
+      extA <= 0 ? "0 단위 (면적 입력 대기)" : `필요 능력단위: ${formatNum(extUnits)} 단위 (최소 ${formatNum(extQty)}개 배치)`,
+      `산정면적 ${formatNum(extA)} ㎡, 기준면적 ${formatNum(extEffBase)} ㎡/단위 (${extFireproof ? '내화구조 2배 완화' : '일반구조'})`,
+      `NFPC 101 소화기구의 화재안전성능기준 (ABC분말 3.3kg 3단위 기준, 보행거리 20m 이내, 33㎡ 이상 구획실 추가)`,
+      extA <= 0 ? "0개" : `ABC분말소화기(3.3kg) 최소 ${formatNum(extQty)}개 이상`,
+      ""
+    ]);
+
+    const fwFloorType = document.getElementById('fw_floor_type')?.value || 'low';
+    const maxHydN = (fwFloorType === 'low') ? 2 : 5;
+    const fwHydrantN = Math.min(maxHydN, Math.max(1, parseInt(document.getElementById('fw_hydrant_n')?.value) || 2));
+    const fwSpChoice = document.getElementById('fw_sp_n')?.value || '20_other';
+    let fwSpN = 20;
+    if (fwSpChoice === '10') fwSpN = 10;
+    else if (fwSpChoice.startsWith('30')) fwSpN = 30;
+    else if (fwSpChoice === '0_exempt') fwSpN = 0;
+    const fwMul = (fwFloorType === 'super') ? 3 : ((fwFloorType === 'high') ? 2 : 1);
+    const fwHydM3 = fwHydrantN * 2.6 * fwMul;
+    const fwSpM3 = fwSpN * 1.6 * fwMul;
+    const totalWaterM3 = fwHydM3 + fwSpM3;
+    dataRows.push([
+      "",
+      "소방 수원(수조) 법정 용량 산출",
+      `소방 수원 총 유효수량: 약 ${fmtDec(totalWaterM3, 1)} ㎥ (ton)`,
+      `옥내소화전 N=${fwHydrantN}개 (${fmtDec(fwHydM3, 1)}㎥), 스프링클러 N=${fwSpN}개 (${fmtDec(fwSpM3, 1)}㎥), 방수배수 ${fwMul}배`,
+      `NFPC 102 (소화전 N×2.6㎥×시간배수), NFPC 103 (SP N×1.6㎥×시간배수: 일반 20분 1배 / 고층 40분 2배 / 초고층 60분 3배)`,
+      `소방수원 ${fmtDec(totalWaterM3, 1)} ㎥ (소화전 ${fmtDec(fwHydM3, 1)}㎥ + SP ${fmtDec(fwSpM3, 1)}㎥)`,
+      ""
+    ]);
+
+    const fPumpSys = document.getElementById('f_pump_system')?.value || 'sp_only';
+    const fPumpEff = Math.max(0.1, parseFloat(document.getElementById('f_pump_eff')?.value) || 0.65);
+    const fPumpK = parseFloat(document.getElementById('f_pump_k')?.value) || 1.15;
+    const fHydFlow = fwHydrantN * 130;
+    const fSpFlow = fwSpN * 80;
+    let fPumpLpm = Math.max(0, parseFloat(document.getElementById('f_pump_lpm')?.value) || 0);
+    if (fPumpSys === 'sp_only') fPumpLpm = fSpFlow;
+    else if (fPumpSys === 'combined') fPumpLpm = fHydFlow + fSpFlow;
+    else if (fPumpSys === 'hyd_only') fPumpLpm = fHydFlow;
+
+    const fFloorH = Math.max(2.5, parseFloat(bldH) || 3.0);
+    const fActualH = Math.max(fFloorH, (Math.max(1, bldUp) + bldDown - 1) * fFloorH);
+    const fLegalReqH = (fPumpSys === 'sp_only') ? 10 : 23;
+    const fAutoHead = Math.ceil(fActualH + (fActualH * 0.25) + fLegalReqH);
+    const fPumpHead = Math.max(0, parseFloat(document.getElementById('f_pump_head')?.value) || 0) || fAutoHead;
+    const fPumpKw = (fPumpLpm * fPumpHead * 0.163 * fPumpK) / (1000 * fPumpEff);
+    const stdMotors = [1.5, 2.2, 3.7, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200];
+    const recFPumpMotor = stdMotors.find(m => m >= fPumpKw) || Math.ceil(fPumpKw);
+    dataRows.push([
+      "",
+      "소방펌프 용량 및 양정 산출",
+      (fPumpLpm <= 0 || fPumpHead <= 0) ? "0 kW (양정/토출량 대기)" : `소방펌프: ${formatNum(fPumpLpm)} LPM × ${formatNum(fPumpHead)}m (${fPumpKw.toFixed(1)} kW)`,
+      `계통: ${fPumpSys}, 토출량 ${formatNum(fPumpLpm)} LPM, 전양정 ${formatNum(fPumpHead)} m, 효율 ${Math.round(fPumpEff * 100)}%, 전달계수 K=${fPumpK}`,
+      `공식: P = (Q×H×0.163×K)/(1000×η) = 약 ${fPumpKw.toFixed(2)} kW (약 ${(fPumpKw * 1.36).toFixed(1)} PS) [NFPC 102/103]`,
+      (fPumpLpm <= 0 || fPumpHead <= 0) ? "0 kW" : `표준 전동기 ${recFPumpMotor} kW 이상`,
+      ""
+    ]);
+
+    const fSmokeType = document.getElementById('f_smoke_type')?.value || 'living';
+    const fSmokeEff = parseFloat(document.getElementById('f_smoke_eff')?.value) || 0.65;
+    const fFirstArea = stdFloor.area > 0 ? stdFloor.area : 500;
+    let fSmokeCmh = Math.max(0, parseFloat(document.getElementById('f_smoke_cmh')?.value) || 0);
+    let fSmokePa = Math.max(0, parseFloat(document.getElementById('f_smoke_pa')?.value) || 0);
+    if (fSmokeType === 'living') {
+      if (fSmokeCmh <= 0) fSmokeCmh = fFirstArea <= 400 ? Math.max(27000, Math.ceil(fFirstArea * 60)) : Math.max(40000, Math.ceil(Math.min(fFirstArea, 1000) * 0.8 * 60));
+      if (fSmokePa <= 0) fSmokePa = 450;
+    } else if (fSmokeType === 'stairs') {
+      const openDoors = (bldUp >= 20) ? 2 : 1;
+      if (fSmokeCmh <= 0) fSmokeCmh = Math.ceil((openDoors * 0.9 * 2.1 * 0.7 * 3600) + 1200);
+      if (fSmokePa <= 0) fSmokePa = Math.min(650, Math.max(380, Math.ceil(350 + (fActualH * 2.5))));
+    }
+    const fSmokeKw = ((fSmokeCmh / 60) * (fSmokePa / 9.806) * 1.20) / (102 * 60 * fSmokeEff);
+    const fSmokeName = (fSmokeType === 'living') ? '거실 제연 배연기' : (fSmokeType === 'stairs' ? '부속실 제연 급기송풍기' : '제연 송풍기');
+    const recSmokeMotor = fSmokeKw <= 5.5 ? "5.5 kW" : (fSmokeKw <= 7.5 ? "7.5 kW" : (fSmokeKw <= 11 ? "11 kW" : (fSmokeKw <= 15 ? "15 kW" : formatNum(Math.ceil(fSmokeKw / 3.7) * 3.7) + " kW")));
+    dataRows.push([
+      "",
+      "제연 송풍기(Fan) 풍량 및 동력",
+      (fSmokeCmh <= 0 || fSmokePa <= 0) ? "0 kW (제연풍량/정압 대기)" : `${fSmokeName}: ${formatNum(fSmokeCmh)} CMH × ${formatNum(fSmokePa)} Pa (${fmtDec(fSmokeKw, 1)} kW)`,
+      `방식: ${fSmokeName}, 풍량 ${formatNum(fSmokeCmh)} CMH, 정압 ${formatNum(fSmokePa)} Pa, 효율 ${Math.round(fSmokeEff * 100)}%, 여유율 1.20`,
+      `NFPC 501/501A 기준, 소요동력 약 ${fSmokeKw.toFixed(2)} kW (약 ${(fSmokeKw * 1.36).toFixed(1)} HP)`,
+      (fSmokeCmh <= 0 || fSmokePa <= 0) ? "0 kW" : `${recSmokeMotor} 이상 표준 전동기`,
+      ""
+    ]);
+
+    const dateStr = new Date().toISOString().slice(0, 10);
+    const fileName = `건축기계설비_엔지니어링_종합산출서_${dateStr}.xlsx`;
+
+    if (typeof XLSX !== 'undefined') {
+      const wb = XLSX.utils.book_new();
+      const ws = XLSX.utils.aoa_to_sheet(dataRows);
+      ws['!cols'] = [
+        { wch: 14 }, { wch: 34 }, { wch: 42 }, { wch: 48 }, { wch: 58 }, { wch: 38 }, { wch: 20 }
+      ];
+      XLSX.utils.book_append_sheet(wb, ws, "종합설계계산서");
+
+      const wbout = XLSX.write(wb, { bookType: 'xlsx', type: 'array' });
+      const blob = new Blob([wbout], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      triggerBlobDownload(blob, fileName);
+
+    } else {
+      let csvContent = "\uFEFF";
+      dataRows.forEach(row => {
+        csvContent += row.map(v => `"${String(v !== undefined ? v : '').replace(/"/g, '""')}"`).join(',') + "\r\n";
+      });
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      triggerBlobDownload(blob, `건축기계설비_엔지니어링_종합산출서_${dateStr}.csv`);
+    }
+
+  } catch (err) {
+    console.error("저장 중 오류 발생:", err);
+    alert("결과값 저장 중 문제가 발생했습니다: " + err.message);
+  }
 }
+
+// 💾 PC 브라우저 원클릭 파일 다운로드 트리거
+function triggerBlobDownload(blob, filename) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.style.display = 'none';
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  setTimeout(() => {
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, 1000);
+}
+
 
 // ----------------------------------------------------
 // 🔢 윈도우 계산기 및 MEP 전용 단위환산기 제어 함수
