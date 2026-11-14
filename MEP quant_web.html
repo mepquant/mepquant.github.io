@@ -2149,10 +2149,10 @@
                 순환수 운전 온도차 <span class="info-icon">ℹ️</span>
               </label>
               <div class="ctrl-select-wrap">
-                <select id="exp_temp_range">
-                  <option value="0.025">온수 난방 (50℃ ➔ 80℃, 팽창률 2.5%)</option>
-                  <option value="0.035">고온수 난방 (50℃ ➔ 95℃, 팽창률 3.5%)</option>
-                  <option value="0.008">냉수 계통 (7℃ ➔ 12℃, 팽창률 0.8%)</option>
+               <select id="exp_temp_range">
+                  <option value="0.025">온수 난방 (충수 10℃ ➔ 운전 80℃, 팽창률 2.5%)</option>
+                  <option value="0.035">고온수 난방 (충수 10℃ ➔ 운전 95℃, 팽창률 3.5%)</option>
+                  <option value="0.008">냉수 계통 (충수 10℃ ➔ 정지 40℃, 팽창률 0.8%)</option>
                 </select>
               </div>
             </div>
@@ -2660,14 +2660,14 @@
               <label class="clickable-label" onclick="openModal('guide_drain_septic_modal')">건물 세부 용도 <span class="info-icon">ℹ️</span></label>
               <div class="ctrl-select-wrap">
                 <select id="septic_use">
-                  <option value="office">일반 사무소 (n = 0.075 × A)</option>
-                  <option value="pub">관공서/공공업무 (n = 0.08 × A)</option>
-                  <option value="comm">근린생활/상가 (n = 0.08 × A)</option>
-                  <option value="edu">초·중·고·대학교 (n = 0.05 × A)</option>
-                  <option value="hotel">숙박시설/호텔 (n = 0.10 × A)</option>
-                  <option value="restaurant">일반음식점 (식당: n = 0.12 × A)</option>
-                  <option value="apt">공동주택 (세대별 산정)</option>
-                  <option value="factory">공장/창고 (n = 0.05 × A)</option>
+                  <option value="office">일반 사무소 (N = 0.075 × A, 15 L/㎡)</option>
+                  <option value="pub">공공청사/관공서 (N = 0.150 × A, 15 L/㎡)</option>
+                  <option value="comm">소매점/근린생활시설 (N = 0.075 × A, 15 L/㎡)</option>
+                  <option value="edu">중·고·대학교 주간 (N = 0.067 × A, 8 L/㎡)</option>
+                  <option value="hotel">숙박시설/호텔 [취사없음] (N = 0.080 × A, 20 L/㎡)</option>
+                  <option value="restaurant">일반음식점 (N = 0.175 × A, 60 L/㎡)</option>
+                  <option value="apt">공동주택 (세대별 N=2.7+(R-2)×0.5, 200 L/인)</option>
+                  <option value="factory">일반 공장 (N = 0.125 × A, 5 L/㎡)</option>
                 </select>
               </div>
             </div>
@@ -3131,9 +3131,9 @@
     <div class="manual-body">
       <div class="manual-sec">
         <h4>1. 유량 산정식 및 배관 내경 산출</h4>
-        <div class="manual-formula-callout">
-          LPM = Q(kcal/h) ÷ [60 × Cp × ΔT] = (USRT × 3,516 × 60) ÷ (4.186 × ΔT)<br>
-          D = √[ (4 × Q_m3/s) ÷ (π × V) ] × 1000 [mm]
+          <div class="manual-formula-callout">
+          LPM = Q(kcal/h) ÷ [60 × c<sub>w</sub> × ΔT] = (USRT × 3.516 × 60) ÷ (4.186 × ΔT)<br>
+          D = √[ (4 × Q<sub>m3/s</sub>) ÷ (π × V) ] × 1000 [mm] &nbsp;(Q<sub>m3/s</sub> = LPM ÷ 60,000)
         </div>
         <table class="esp-table">
           <thead><tr><th>관경 구분</th><th>추천 경제 유속</th><th>적용 구역</th></tr></thead>
@@ -3871,14 +3871,16 @@
       <!-- 2. 냉난방 및 열원 장비 설계 지침 -->
       <div class="manual-sec">
         <h4>2. 냉난방 및 중앙 열원 장비 설계 지침 [SAREK 핸드북 / KDS 31 20]</h4>
-        <h5>(1) 피크부하(Peak Load) 산정식 및 장비 용량 환산 공식</h5>
+      <h5>(1) 피크부하(Peak Load) 산정식 및 장비 용량 환산 공식</h5>
         <div class="manual-formula-callout">
-          • Chiller/냉동기 용량 (USRT) = $\left[ A(\text{㎡}) \times q_c(\text{kcal/h·㎡}) \times \alpha \right] \div 3,024 = \left[ A \times q_c(\text{W/㎡}) \times \alpha \right] \div 3,516$<br>
-          • 온수보일러 정격용량 (kcal/h) = $A(\text{㎡}) \times \left[ q_h(\text{난방}) + q_{hw}(\text{급탕가산}) \right] \times \alpha$<br>
-          • 스팀보일러 증발량 (kg/h) = $A(\text{㎡}) \times w_s(\text{단위증기소비량}) \times \alpha$<br>
-          • 주요 공학 단위 환산: 1 USRT = 3,024 kcal/h = 3,516 W (3.516 kW) | 1 kcal/h ≈ 1.163 W | 1 BHP = 15.65 kg/h (증발량) ≈ 8,435 kcal/h
+          • 냉동기/칠러 용량 (USRT) = [ A(㎡) × q_c(kcal/h·㎡) × α ] ÷ 3,024<br>
+          &nbsp;&nbsp;(W/㎡ 기준 적용 시: [ A(㎡) × q_c_W(W/㎡) × α ] ÷ 3,517)<br>
+          • 온수보일러 정격용량 (kcal/h) = A(㎡) × [ q_h(난방, kcal/h·㎡) + q_hw(급탕가산, kcal/h·㎡) ] × α<br>
+          • 스팀보일러 증발량 (kg/h) = A(㎡) × w_s(단위증기소비량, kg/h·㎡) × α<br>
+          • 주요 공학 단위 환산: 1 USRT = 3,024 kcal/h ≈ 3,517 W (3.516~3.517 kW) | 1 kcal/h ≈ 1.163 W (1 kW ≈ 860 kcal/h)<br>
+          • 보일러 마력 환산: 1 BHP = 15.65 kg/h (100℃ 상당증발량 기준) ≈ 8,435 kcal/h
         </div>
-        <p>※ <b>안전 여유율($\alpha$):</b> 일반 상업/업무시설은 <b>1.15 (15%)</b>를 표준으로 하며, 병원·연구소 등 연속 안정운전 대상은 <b>1.20 (20%)</b>, 개별 존 제어가 정밀한 신축 건물은 1.10을 적용합니다.</p>
+        <p>※ <b>안전 여유율(α):</b> 일반 상업/업무시설은 <b>1.15 (15%)</b>를 표준으로 하며, 병원·연구소 등 연속 안정운전 대상은 <b>1.20 (20%)</b>을 적용합니다. (1.10 등 기타 여유율이나 급탕가산부하[기본 20 kcal/h·㎡] 조정은 <b>'수기 입력'</b>에서 직접 지정할 수 있습니다. 또한 산출되는 kW는 소비전력이 아닌 <b>냉·난방 열출력(능력)</b> 기준입니다.)</p>
         
         <h5>(2) 대한설비공학회(SAREK) 핸드북 표준 부하 원단위 데이터 테이블</h5>
         <table class="manual-table">
@@ -4021,29 +4023,29 @@
           </tbody>
         </table>
 
-        <h5>(3) 팬코일유니트(FCU) 표준 선정 및 공학 기준</h5>
+<h5>(3) 팬코일유니트(FCU) 표준 선정 및 공학 기준</h5>
         <ul>
-          <li><b>풍량 산출 공식:</b> $Q = q_s \div (c_p \cdot \rho \cdot \Delta T) = q_s \div (0.29 \cdot \Delta T)$ [$\text{m}^3/\text{h}$]<br>
-          ($q_s$: 실내 현열부하 $\text{kcal/h}$, $c_p$: 공기정압비열 $0.24\,\text{kcal/kg·℃}$, $\rho$: 공기밀도 $1.2\,\text{kg/m}^3$, $\Delta T$: 취출온도차 8~12℃)</li>
+          <li><b>풍량 산출 공식:</b> <code>Q = q<sub>s</sub> ÷ (c<sub>p</sub> · ρ · ΔT) = q<sub>s</sub> ÷ (0.29 · ΔT)</code> [m³/h, CMH]<br>
+          (q<sub>s</sub>: 실내 현열부하 kcal/h, c<sub>p</sub>: 공기정압비열 0.24 kcal/kg·℃, ρ: 공기밀도 1.2 kg/m³, ΔT: 취출온도차 8~12℃)</li>
           <li><b>표준 모델 체계:</b> 300 CFM (3.4 kW), 400 CFM (4.6 kW), 600 CFM (6.8 kW), 800 CFM (9.1 kW), 1,000 CFM (11.4 kW), 1,200 CFM (13.6 kW), 1,400 CFM (15.8 kW) 체계로 구성되며 대당 20~35㎡ 담당 배치가 가장 이상적입니다.</li>
           <li><b>배관 규격 실무 규칙:</b> FCU 냉온수 공급/환수 배관은 슬러지 퇴적과 관내 에어포켓 방지를 위해 <b>수평 주배관은 최소 25A(1") 이상</b>을 시공하며, 개별 기구 접속 지관만 20A(3/4")를 허용합니다.</li>
         </ul>
 
-        <h5>(4) 순환수배관 경제유속 및 관경 산정 (KDS 31 20 20)</h5>
+<h5>(4) 순환수배관 경제유속 및 관경 산정 (KDS 31 20 20)</h5>
         <div class="manual-formula-callout">
-          • 유량 산정: $\text{LPM} = Q(\text{kcal/h}) \div (60 \times c_w \times \Delta T) = (\text{USRT} \times 3,024) \div (60 \times 1.0 \times \Delta T)$<br>
-          • 연속방정식에 의한 관경: $D = \sqrt{\dfrac{4 \times Q_w}{\pi \times V}} \times 1,000$ [mm]<br>
-          • 일반 냉수계통($\Delta T=5℃$): 1 USRT당 약 10.08 LPM | 지역냉방($\Delta T=7℃$): 7.2 LPM | 온수난방($\Delta T=10℃$): 5.04 LPM
+          • 유량 산정: <code>LPM = Q(kcal/h) ÷ (60 × c<sub>w</sub> × ΔT) = (USRT × 3,024) ÷ (60 × 1.0 × ΔT)</code><br>
+          • 연속방정식에 의한 관경: <code>D = √[ (4 × Q<sub>w</sub>) ÷ (π × V) ] × 1,000</code> [mm] &nbsp;(단, Q<sub>w</sub> = LPM ÷ 60,000 [m³/s], V = 유속 [m/s])<br>
+          • 일반 냉수계통(ΔT=5℃): 1 USRT당 약 10.08 LPM | 지역냉방(ΔT=7℃): 7.20 LPM | 온수난방(ΔT=10℃): 5.04 LPM
         </div>
         <table class="manual-table">
           <thead>
-            <tr><th>관경 호칭</th><th>허용 경제 유속</th><th>단위 마찰저항 (R)</th><th>적용 구역</th></tr>
+            <tr><th>관경 호칭</th><th>허용 경제 유속</th><th>권장 마찰저항 (R)</th><th>적용 구역</th></tr>
           </thead>
           <tbody>
-            <tr><td>25A ~ 40A</td><td>0.6 ~ 1.0 m/s</td><td>15 ~ 30 mmAq/m</td><td>정숙을 요하는 병실/주거 가지관, FCU 접속 분기관</td></tr>
-            <tr><td>50A ~ 80A</td><td>1.0 ~ 1.5 m/s</td><td>20 ~ 35 mmAq/m</td><td>층별 수평 주배관, 입상관(Riser)</td></tr>
-            <tr><td>100A ~ 200A</td><td>1.5 ~ 2.0 m/s</td><td>25 ~ 40 mmAq/m</td><td>기계실 메인 헤더 연결관, 플랜트 루프관</td></tr>
-            <tr><td>250A 이상</td><td>2.0 ~ 2.5 m/s</td><td>30 ~ 45 mmAq/m</td><td>대형 플랜트 주배관 (침식 방지를 위해 2.5 m/s 초과 금지)</td></tr>
+            <tr><td>25A ~ 40A</td><td>0.6 ~ 1.0 m/s</td><td>15 ~ 35 mmAq/m</td><td>정숙을 요하는 병실/주거 가지관, FCU 접속 분기관</td></tr>
+            <tr><td>50A ~ 80A</td><td>1.0 ~ 1.5 m/s</td><td>15 ~ 35 mmAq/m</td><td>층별 수평 주배관, 입상관(Riser)</td></tr>
+            <tr><td>100A ~ 200A</td><td>1.5 ~ 2.0 m/s</td><td>15 ~ 30 mmAq/m</td><td>기계실 메인 헤더 연결관, 플랜트 루프관</td></tr>
+            <tr><td>250A 이상</td><td>2.0 ~ 2.5 m/s</td><td>10 ~ 25 mmAq/m</td><td>대형 플랜트 주배관 (침식 방지를 위해 2.5 m/s 초과 금지)</td></tr>
           </tbody>
         </table>
 
@@ -4063,25 +4065,24 @@
           <li><b>시공 주의사항:</b> 드레인 배관의 공기 유입 방지 및 냄새 역류 차단을 위해 FCU 배출구 직후에 <b>최소 50mm 이상의 봉수 깊이를 가진 트랩(Trap)</b>을 반드시 설치해야 합니다.</li>
         </ul>
 
-        <h5>(6) 밀폐식 다이어프램 팽창탱크 계산식 (KDS 31 25)</h5>
+<h5>(6) 밀폐식 다이어프램 팽창탱크 계산식 (KDS 31 25)</h5>
         <div class="manual-formula-callout">
-          $V_t = \dfrac{V_w \times \beta}{1 - \dfrac{P_1 + 1.033}{P_2 + 1.033}}$ [L]<br>
-          • $V_w$: 계통 총 보유수량 (L) [실측값 미정 시 바닥면적 1.2~1.8 L/㎡ 추정치 적용]<br>
-          • $\beta$: 온수 팽창계수 ($\text{냉수 } 7\to 12℃: 0.008$ | $\text{온수 } 50\to 80℃: 0.025$ | $\text{고온수 } 50\to 95℃: 0.035$)<br>
-          • $P_1$: 탱크 봉입 최저압력 ($\text{최고위 배관 정수두압 } + 0.3 \sim 0.5\,\text{bar}$)<br>
-          • $P_2$: 안전밸브 분출 설정압력 ($\text{보일러/배관 최고허용압력 } - 0.5\,\text{bar}$)
+          <code>V<sub>t</sub> = (V<sub>w</sub> × β) ÷ [ 1 - (P<sub>1</sub> + 1.013) ÷ (P<sub>2</sub> + 1.013) ]</code> [L]<br>
+          • V<sub>w</sub>: 계통 총 보유수량 (L) [실측값 미정 시 바닥면적 1.2~1.8 L/㎡ 추정치 적용]<br>
+          • β: 수온 팽창계수 (냉수 충수10→정지40℃: 0.008 | 온수 10→80℃: 0.025 | 고온수 10→95℃: 0.035)<br>
+          • P<sub>1</sub>: 최저 사용(봉입)압력 (최고위 배관 정수두압 + 0.3~0.5 bar)<br>
+          • P<sub>2</sub>: 안전밸브 분출 설정압력 (보일러/배관 최고허용압력 - 0.5 bar)
         </div>
-      </div>
 
       <!-- 3. 공조 및 환기덕트 설계 지침 -->
       <div class="manual-sec">
         <h4>3. 공조 및 환기덕트 설계 지침 (KDS 31 25 20)</h4>
-        <h5>(1) 등마찰 손실법(Equal Friction Method) 및 단면 산출</h5>
-        <div class="manual-formula-callout">
-          • 필요 단면적: $A_d = \dfrac{Q_{\text{cmh}}}{3,600 \times V}$ [$\text{㎡}$] $\to$ 덕트 가로폭: $W = \dfrac{A_d \times 10^6}{H}$ [mm]<br>
-          • 원형 환산 직경 (Huebscher 공식): $D_e = 1.30 \times \dfrac{(a \cdot b)^{0.625}}{(a + b)^{0.25}}$ [mm]<br>
-          • 설계 기준 단위 마찰저항: 일반 공조덕트 $\Delta P = 0.8 \sim 1.0\,\text{Pa/m}$ ($0.08 \sim 0.1\,\text{mmAq/m}$)
-        </div>
+             <h5>(1) 덕트 단면 산출(풍속법 / 등마찰 손실 기준)</h5>
+                <div class="manual-formula-callout">
+                 • 필요 단면적: <code>A<sub>d</sub> = Q<sub>cmh</sub> ÷ (3,600 × V)</code> [㎡] → 덕트 가로폭: <code>W = (A<sub>d</sub> × 10<sup>6</sup>) ÷ H</code> [mm] <br>
+                 • 원형 환산 직경 (Huebscher 공식): <code>D<sub>e</sub> = 1.30 × (W · H)<sup>0.625</sup> ÷ (W + H)<sup>0.25</sup></code> [mm]<br>
+                 • 설계 기준 단위 마찰저항: 일반 공조덕트 ΔP = 0.8 ~ 1.0 Pa/m (0.08 ~ 0.10 mmAq/m)
+              </div>
         <ul>
           <li><b>종횡비(Aspect Ratio) 제한:</b> 덕트 단면의 가로와 세로 비율($W : H$)은 기류 마찰손실 증가 및 판 진동 소음을 억제하기 위해 <b>최대 1 : 4 이하</b>로 제한하며, <b>이상적 비율은 1 : 1 ~ 1 : 2</b>입니다.</li>
           <li><b>실무 권장 풍속 기준:</b>
@@ -4101,12 +4102,12 @@
           <li><b>유효 개구율(Free Area Ratio):</b> 알루미늄 가동형/고정형 루버 표준 40~50%, 방충망(Bird Screen) 및 프리필터 부착 시 개구율이 급감하므로 <b>30~35%</b>로 보정하여 개구 단면을 산정해야 합니다.</li>
         </ul>
 
-        <h5>(3) 송풍기 전동기 축동력(kW) 산정식</h5>
+     <h5>(3) 송풍기 전동기 축동력(kW) 산정식</h5>
         <div class="manual-formula-callout">
-          $P_m = \dfrac{\dfrac{Q}{60} \times \dfrac{P_t}{9.806} \times K}{102 \times 60 \times \eta} = \dfrac{Q \times P_t \times K}{3,600 \times 1,000 \times \eta}$ [kW]<br>
-          • $Q$: 송풍량 ($\text{m}^3/\text{h}$, CMH) | $P_t$: 송풍기 기외 전정압 (Pa)<br>
-          • $\eta$: 송풍기 전효율 (시로코 다익팬: 55~65% | 에어포일/익형팬: 70~80% | 소형 축류팬: 45~55%)<br>
-          • $K$: 전동기 전달 여유율 (모터 직결 구동: 1.15 | V-벨트 구동: 1.20)
+          <code>P<sub>m</sub> = [ (Q ÷ 60) × (P<sub>t</sub> ÷ 9.806) × K ] ÷ (102 × 60 × η) ≈ (Q × P<sub>t</sub> × K) ÷ (3,600 × 1,000 × η)</code> [kW]<br>
+          • Q: 송풍량 (m³/h, CMH) | P<sub>t</sub>: 송풍기 기외 전정압 (Pa)<br>
+          • η: 송풍기 전효율 (시로코 다익팬: 55~65% | 에어포일/익형팬: 70~80% | 소형 축류팬: 45~55%)<br>
+          • K: 전동기 전달 여유율 (모터 직결 구동: 1.15 | V-벨트 구동: 1.20)
         </div>
       </div>
 
@@ -4170,12 +4171,13 @@
           </tbody>
         </table>
 
-        <h5>(3) 정화조 및 오수처리시설 인원산정 [환경부 고시 제2021-177호]</h5>
+    <h5>(3) 정화조 및 오수처리시설 인원산정 [환경부 고시 제2025-165호]</h5>
         <div class="manual-formula-callout">
-          산정 인원수: $n = N \times A$ [인용]<br>
-          • 업무시설(사무소): $n = 0.075 \times A$ | 관공서: $n = 0.08 \times A$ | 상가/근생: $n = 0.08 \times A$<br>
-          • 일반음식점(식당): $n = 0.12 \times A$ | 숙박업(호텔): $n = 0.10 \times A$ | 공장/연구소: $n = 0.05 \times A$<br>
-          • 1일 예상 오수발생량: $Q_d = n \times 200\,\text{L/인·일}$ (BOD 부하량 40g/인·일 기준)
+          • 정화조 인원산정식 (비주거): <code>N = 계수 × A(연면적, ㎡)</code> [인용]<br>
+          &nbsp;&nbsp;- 일반사무소/소매점: 0.075×A | 공공청사: 0.150×A | 일반음식점: 0.175×A<br>
+          &nbsp;&nbsp;- 숙박시설(취사없음): 0.080×A | 공장: 0.125×A | 중·고·대(주간): 0.067×A (초등 0.050×A)<br>
+          • 1일 예상 오수발생량 (Q<sub>d</sub>): 주거시설은 <code>N × 200 L/인·일</code>, 비주거 건축물은 <code>연면적 A × 용도별 원단위(L/㎡·일)</code> 적용<br>
+          &nbsp;&nbsp;(사무소·공공청사·소매점 15, 음식점 60, 숙박 20, 학교 8, 공장 5 L/㎡·일)
         </div>
       </div>
 
@@ -4184,15 +4186,15 @@
         <h4>5. 도시가스 설비 설계 지침 [KGS Code FU551 / Pole 공식]</h4>
         <h5>(1) 저압 도시가스 유량 및 배관경 산출 (Pole Formula)</h5>
         <div class="manual-formula-callout">
-          $Q = 0.00222 \times \sqrt{\dfrac{D^5 \times H}{S \times L}}$ [$\text{m}^3/\text{h}$]<br>
-          $\therefore D = \left[ \dfrac{Q^2 \times S \times L}{(0.00222)^2 \times H} \right]^{0.2}$ [mm]<br>
-          • $Q$: 가스 유량 ($\text{m}^3/\text{h} = \text{소비열량 Mcal/h} \div 10.5\,\text{Mcal/m}^3$)<br>
-          • $D$: 배관 내경 (mm) | $H$: 설계 허용 압력손실 (표준: $10 \sim 25\,\text{mmAq}$ = $100 \sim 250\,\text{Pa}$)<br>
-          • $S$: 가스 비중 (천연가스 LNG 비중 $S = 0.65$ | LPG 비중 $S = 1.55$)<br>
-          • $L$: 배관 상당길이 ($L = \text{직관길이} + \text{곡관/밸브 등가길이}$, 통상 직관 $\times 1.2 \sim 1.5$)
+          <code>Q = 0.00222 × √[ (D<sup>5</sup> × H) ÷ (S × L) ]</code> [m³/h]<br>
+          <code>∴ D = [ (Q<sup>2</sup> × S × L) ÷ (0.00222<sup>2</sup> × H) ]<sup>0.2</sup></code> [mm]<br>
+          • Q: 가스 유량 (m³/h = 소비열량 Mcal/h ÷ 10.5 Mcal/m³)<br>
+          • D: 배관 내경 (mm) | H: 설계 허용 압력손실 (표준: 10~25 mmAq ≈ 100~250 Pa)<br>
+          • S: 가스 비중 (도시가스 LNG 비중 S = 0.65 | LPG 비중 S = 1.55)<br>
+          • L: 배관 상당길이 (직관길이 + 곡관/밸브 등가길이, 통상 직관 × 1.2~1.5)
         </div>
         <ul>
-          <li><b>입상관 고저차에 의한 압력보정:</b> LNG는 공기보다 가벼우므로(비중 0.65) 수직 상승할 때 압력이 자연 상승합니다. $\Delta H = 1.293 \times (1 - S) \times h \approx 0.45 \times h$ [mmAq] 만큼 상승하므로 초고층 건물 설계 시 감압밸브 배치를 검토합니다.</li>
+          <li><b>입상관 고저차에 의한 압력보정:</b> LNG는 공기보다 가벼우므로(비중 0.65) 수직 상승할 때 압력이 자연 상승합니다. <code>ΔH = 1.293 × (1 - S) × h ≈ 0.45 × h</code> [mmAq] 만큼 상승하므로 초고층 건물 설계 시 감압밸브 배치를 검토합니다.</li>
         </ul>
 
         <h5>(2) 가스계량기(Gas Meter) 정격 등급 매칭표</h5>
@@ -4214,11 +4216,12 @@
       <!-- 6. 소방방재설비 화재안전성능기준 -->
       <div class="manual-sec">
         <h4>6. 소방방재설비 화재안전성능기준 [소방시설법 / NFPC 101~502]</h4>
-        <h5>(1) 법정 소방 수원(유효저수량) 산정식 [NFPC 102/103]</h5>
+        <h5>(1) 법정 소방 수원(유효저수량) 산정식 [NFPC 102/103/604]</h5>
         <div class="manual-formula-callout">
-          • 옥내소화전 수원: $V = N \times 2.6\,\text{㎥} \times T_m$ ($N$: 최대 방수구수, 최대 2개 적용)<br>
-          • 스프링클러 수원: $V = N \times 1.6\,\text{㎥} \times T_m$ ($N$: 법정 기준 헤드수, 방수량 $80\,\text{L/min} \times 20\,\text{min} = 1.6\,\text{㎥}$)<br>
-          • 층수별 시간 배수($T_m$): 일반 건물(29층 이하) $\mathbf{1.0}$ (20분) | 준초고층(30~49층) $\mathbf{2.0}$ (40분) | 초고층(50층 이상) $\mathbf{3.0}$ (60분)
+          • 옥내소화전 수원: <code>V = N × 2.6 ㎥ × T<sub>m</sub></code> (N: 최다 설치층 방수구수 — 29층 이하 최대 <b>2개</b>, 30층 이상 고층건축물 최대 <b>5개</b>)<br>
+          • 스프링클러 수원: <code>V = N × 1.6 ㎥ × T<sub>m</sub></code> (N: 법정 기준 헤드수, 방수량 80 L/min × 20 min = 1.6 ㎥)<br>
+          • 층수별 시간 배수(T<sub>m</sub>): 일반 건물(29층 이하) <b>1.0</b> (20분) | 고층(30~49층) <b>2.0</b> (40분) | 초고층(50층 이상) <b>3.0</b> (60분)<br>
+          ※ 유효저수량 외 옥상수조(유효수량의 1/3 이상) 별도 설치 조건(NFPC 102·103·604) 확인 필요
         </div>
         <table class="manual-table">
           <thead>
@@ -4233,13 +4236,13 @@
           </tbody>
         </table>
 
-        <h5>(2) 소방펌프 전동기 동력 및 전양정 산출 [NFPC 102/103]</h5>
+<h5>(2) 소방펌프 전동기 동력 및 전양정 산출 [NFPC 102/103]</h5>
         <div class="manual-formula-callout">
-          $P_m = \dfrac{Q \times H \times 0.163 \times K}{1,000 \times \eta}$ [kW]<br>
-          • 토출량 $Q$: 소화전 $130\,\text{LPM} \times N$ | 스프링클러 $80\,\text{LPM} \times N$ (겸용 시 합산)<br>
-          • 전양정 $H = h_1(\text{수직낙차}) + h_2(\text{배관관부속마찰, 실양정의 } 25\%) + h_3(\text{법정최소압력})$<br>
-          ($h_3$: 옥내소화전 $17\,\text{m} = 0.17\,\text{MPa}$ 노즐압 | 스프링클러 $10\,\text{m} = 0.1\,\text{MPa}$ 최원단 헤드압)<br>
-          • 전달계수 $K$: 전동기 구동 <b>1.15</b> | 펌프 효율 $\eta$: 표준 소방원심펌프 <b>65% (0.65)</b>
+          <code>P<sub>m</sub> = (Q × H × 0.163 × K) ÷ (1,000 × η)</code> [kW]<br>
+          • 토출량 Q: 소화전 130 LPM × N (29층 이하 최대 2, 30층 이상 최대 5) | 스프링클러 80 LPM × N (겸용 시 합산)<br>
+          • 전양정 <code>H = h<sub>1</sub>(수직낙차) + h<sub>2</sub>(배관마찰, 실양정의 25%) + h<sub>3</sub>(노즐/헤드압 + 호스손실)</code><br>
+          &nbsp;&nbsp;(h<sub>3</sub>: 옥내소화전 노즐압 17m + 소방호스 마찰손실 약 6m = <b>23m</b> | 스프링클러 최원단 헤드압 <b>10m</b>)<br>
+          • 전달계수 K: 전동기 구동 <b>1.15</b> (또는 1.10) | 펌프 효율 η: 표준 소방원심펌프 <b>65% (0.65)</b>
         </div>
 
         <h5>(3) 소방 배관경 규정 (규약배관 vs 수리계산)</h5>
@@ -4575,13 +4578,16 @@ const eqPeakLoadMap = {
 };
 
 const septicRateMap = {
-  office: 0.075, pub: 0.08, comm: 0.08, edu: 0.05,
-  hotel: 0.10, restaurant: 0.12, apt: 0.035, factory: 0.05
+  office:     { rate: 0.075, sewageLPerM2: 15, desc: "일반 사무소 (15 L/㎡·일)" },
+  pub:        { rate: 0.150, sewageLPerM2: 15, desc: "공공청사 (15 L/㎡·일)" },
+  comm:       { rate: 0.075, sewageLPerM2: 15, desc: "소매점/근린생활 (15 L/㎡·일)" },
+  edu:        { rate: 0.067, sewageLPerM2: 8,  desc: "고교/대학교 주간 (8 L/㎡·일)" },
+  hotel:      { rate: 0.080, sewageLPerM2: 20, desc: "숙박시설 취사없음 (20 L/㎡·일)" },
+  restaurant: { rate: 0.175, sewageLPerM2: 60, desc: "일반음식점 (60 L/㎡·일)" },
+  apt:        { rate: 0.035, sewageLPerM2: 0,  isResidential: true, desc: "공동주택 추정 (200 L/인·일)" },
+  factory:    { rate: 0.125, sewageLPerM2: 5,  desc: "일반 공장 (5 L/㎡·일)" }
 };
 
-// ----------------------------------------------------
-// 🔢 모든 숫자에 천단위 기호(,) 삽입 보장 포맷 함수
-// ----------------------------------------------------
 function formatNum(num) {
   if (num === null || num === undefined || isNaN(num) || num === "") return "0";
   return Math.round(Number(num)).toLocaleString();
@@ -4855,11 +4861,12 @@ function syncBuildingInfo(isOccDirect = false) {
   const expVolEl = document.getElementById('exp_water_vol'); if (expVolEl) expVolEl.value = formatNum(estExpWaterVol);
 
 
-  // 🚰 가압(부스터) 펌프 전양정 건축높이 실시간 동기화
+// 🚰 가압(부스터) 펌프 전양정 건축높이 실시간 동기화
   const pumpHeadEl = document.getElementById('pump_head');
   if (pumpHeadEl && (!pumpHeadEl.value || pumpHeadEl.value === "0")) {
     const curUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
-    const curDown = Math.max(0, parseInt(document.getElementById('main_bld_down')?.value) || 1);
+    const rawDown = parseInt(document.getElementById('main_bld_down')?.value);
+    const curDown = isNaN(rawDown) ? 0 : Math.max(0, rawDown);
     const curH = Math.max(2.5, parseFloat(document.getElementById('main_bld_h')?.value) || 3.0);
     const curActualH = Math.max(curH, (curUp + curDown - 1) * curH);
     pumpHeadEl.value = Math.ceil(curActualH + (curActualH * 0.25) + 15);
@@ -4870,10 +4877,11 @@ function syncBuildingInfo(isOccDirect = false) {
   if (fPumpLpmEl && (!fPumpLpmEl.value || fPumpLpmEl.value === "0")) {
     fPumpLpmEl.value = 1600;
   }
-  const fPumpHeadEl = document.getElementById('f_pump_head');
+const fPumpHeadEl = document.getElementById('f_pump_head');
   if (fPumpHeadEl) {
     const curUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
-    const curDown = Math.max(0, parseInt(document.getElementById('main_bld_down')?.value) || 1);
+    const rawDownF = parseInt(document.getElementById('main_bld_down')?.value);
+    const curDown = isNaN(rawDownF) ? 0 : Math.max(0, rawDownF);
     const curH = Math.max(2.5, parseFloat(document.getElementById('main_bld_h')?.value) || 3.0);
     const curActualH = Math.max(curH, (curUp + curDown - 1) * curH);
     const initCalcHead = Math.ceil(curActualH + (curActualH * 0.25) + 10);
@@ -5380,15 +5388,29 @@ function calculate() {
         size = "FCU 모델 대기 (면적/부하 0)";
         detail = "구역 면적(㎡) 또는 현열부하 조건을 입력해주세요.\n※ '단위 냉방 설계부하' 또는 '실내 현열부하 qs' 레이블을 클릭하면 설계기준 가이드가 표시됩니다.";
       } else {
-        const perUnitKw = targetKw / qty;
-        const perUnitCmh = targetCmh / qty;
 
-        let selectedFcu = fcuCatalog[fcuCatalog.length - 1];
+    const perUnitKw = targetKw / qty;
+        const perUnitCmh = targetCmh / qty;
+        const isAirflowMode = (fcuMode === 'airflow');
+
+        let selectedFcu = null;
         for (let i = 0; i < fcuCatalog.length; i++) {
-          if (fcuCatalog[i].coolKw >= perUnitKw * 0.95) {
-            selectedFcu = fcuCatalog[i];
+          const item = fcuCatalog[i];
+          const meetsHeat = (item.coolKw >= perUnitKw);
+          const meetsAir = isAirflowMode ? (item.cmh >= perUnitCmh) : true;
+          if (meetsHeat && meetsAir) {
+            selectedFcu = item;
             break;
           }
+        }
+
+        let overCapacityNote = "";
+        if (!selectedFcu) {
+          selectedFcu = fcuCatalog[fcuCatalog.length - 1];
+          const reqQtyByHeat = Math.ceil(targetKw / selectedFcu.coolKw);
+          const reqQtyByAir = isAirflowMode ? Math.ceil(targetCmh / selectedFcu.cmh) : 1;
+          const recQty = Math.max(reqQtyByHeat, reqQtyByAir);
+          overCapacityNote = `\n⚠️ [용량 초과 알림] 대당 필요 사양이 최대 표준형(1400 CFM / 15.8 kW)을 초과합니다. 최소 ${formatNum(recQty)}대 이상으로 분할 배치하십시오.`;
         }
 
         const modelTypeSel = document.getElementById('fcu_model_type');
@@ -5403,9 +5425,8 @@ function calculate() {
         const modelPrefix = fcuTagMap[fcuType] || "FCU-STD";
         const finalModelCode = `${modelPrefix}-${selectedFcu.cfm}`;
 
-        let finalWaterPipe = selectedFcu.pipe;
-        if (finalWaterPipe.includes("15A")) finalWaterPipe = "25A (1\") [최소25A적용]";
-        const drainPipeSize = selectedFcu.drain === "15A" ? "25A (최소규격)" : selectedFcu.drain;
+        const finalWaterPipe = selectedFcu.pipe;
+        const drainPipeSize = selectedFcu.drain;
 
         size = `${finalModelCode} (${formatNum(selectedFcu.cfm)} CFM / ${formatDec(selectedFcu.coolKw, 1)} kW) × ${formatNum(qty)}대`;
         detail = `[팬코일유니트(FCU) 표준 공학 규격 선정 사양]\n` +
@@ -5415,11 +5436,11 @@ function calculate() {
                  `❄️ 정격 냉방능력: ${formatDec(selectedFcu.coolKw, 1)} kW (${formatNum(selectedFcu.coolKcal)} kcal/h)\n` +
                  `🔥 정격 난방능력: ${formatDec(selectedFcu.heatKw, 1)} kW (${formatNum(selectedFcu.heatKcal)} kcal/h)\n` +
                  `💨 정격 풍량: ${formatNum(selectedFcu.cmh)} CMH (약 ${formatNum(selectedFcu.cfm)} CFM)\n` +
-                 `💧 냉온수 배관경: ${finalWaterPipe} (설계유량 대당 약 ${formatDec(selectedFcu.lpm, 1)} LPM, 횡주관 최소 25A 적용)\n` +
-                 `🚿 응축수 드레인 배관: ${drainPipeSize} (횡주관 최소 25A 적용)\n` +
+                 `💧 냉온수 배관경: 개별 지관 ${finalWaterPipe} (설계유량 대당 약 ${formatDec(selectedFcu.lpm, 1)} LPM, 수평 주배관 최소 25A 이상)\n` +
+                 `🚿 응축수 드레인 배관: 개별 지관 ${drainPipeSize} (2대 이상 취합 횡주관 최소 25A 이상)\n` +
                  `--------------------------------------------------\n` +
-                 `※ 계산 근거: ${formulaDetail}\n`;
-      }
+                 `※ 계산 근거: ${formulaDetail}${overCapacityNote}\n`;
+       }
     }
 
     // 1-3. 냉온수 순환수배관 관경 산정
@@ -5615,7 +5636,7 @@ function calculate() {
 
       if (p2 <= p1) p2 = p1 + 0.5;
 
-      const denom = 1 - (p1 + 1.033) / (p2 + 1.033);
+      const denom = 1 - (p1 + 1.013) / (p2 + 1.013);
       const vt = (denom > 0 && vW > 0) ? (vW * beta) / denom : 0;
       const expWaterL = vW * beta;
 
@@ -5649,12 +5670,12 @@ function calculate() {
         const pressMmAq = pressPa / 9.806;
         const qM3Min = cmh / 60;
         const fanKw = (qM3Min * pressMmAq * 1.15) / (102 * 60 * eff);
-        const fanHp = (fanKw * 1.36).toFixed(2);
+             const fanHp = fanKw * 1.36;
 
-        size = `송풍기 동력: ${formatDec(fanKw, 2)} kW (약 ${formatDec(fanHp, 2)} HP)`;
+        size = `송풍기 동력: ${fanKw.toFixed(2)} kW (약 ${fanHp.toFixed(2)} PS)`;
         detail = `[송풍기 모터 축동력: ${formatNum(cmh)} CMH${roomSyncNote} | 정압 ${formatNum(pressPa)} Pa]\n` +
-                 `• 팬 효율: ${formatNum(eff * 100)}% (여유율 1.15 적용)\n` +
-                 `• 추천 상용 모터 규격: ${fanKw <= 0.75 ? "0.75 kW" : (fanKw <= 1.5 ? "1.5 kW" : (fanKw <= 2.2 ? "2.2 kW" : formatNum(Math.ceil(fanKw)) + " kW"))}`;
+                 `• 팬 효율: ${Math.round(eff * 100)}% (여유율 1.15 적용)\n` +
+                 `• 추천 상용 모터 규격: ${fanKw <= 0.4 ? "0.4 kW" : (fanKw <= 0.75 ? "0.75 kW" : (fanKw <= 1.5 ? "1.5 kW" : (fanKw <= 2.2 ? "2.2 kW" : Math.ceil(fanKw) + " kW")))}`;
       }
     }
 
@@ -5732,7 +5753,7 @@ if (h > 0) {
 
         size = `덕트 ${formatNum(w)} × ${formatNum(h)} mm`;
         detail = `${roomNote}` +
-                 `• 통과 풍속: 약 ${formatDec(actVel, 2)} m/s | 덕트 종횡비: 1 : ${formatDec(aspect, 1)} ${aspect > 4 ? "⚠️(종횡비 초과)" : "(양호)"}\n` +
+                 `• 통과 풍속: 약 ${actVel.toFixed(2)} m/s | 덕트 종횡비: 1 : ${aspect} ${parseFloat(aspect) > 4 ? "⚠️(종횡비 초과)" : "(양호)"}\n` +
                  `• 원형 덕트 환산 직경: 약 Φ${formatNum(equivDia)} mm`;
       }
     }
@@ -5794,8 +5815,9 @@ if (h > 0) {
       const headMode = document.getElementById('pump_head_mode')?.value || 'auto';
       const headInput = document.getElementById('pump_head');
 
-      const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
-      const bldDown = Math.max(0, parseInt(document.getElementById('main_bld_down')?.value) || 1);
+const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
+      const rawDown = parseInt(document.getElementById('main_bld_down')?.value);
+      const bldDown = isNaN(rawDown) ? 0 : Math.max(0, rawDown);
       const floorH = Math.max(2.5, parseFloat(document.getElementById('main_bld_h')?.value) || 3.0);
       const actualHeightM = Math.max(floorH, (bldUp + bldDown - 1) * floorH);
       const pipeFricM = actualHeightM * 0.25;
@@ -6008,23 +6030,28 @@ if (h > 0) {
       }
     }
 
-    else if (sanMode === 'drain_septic') {
+else if (sanMode === 'drain_septic') {
       const septicKey = document.getElementById('septic_use').value;
-      const rate = septicRateMap[septicKey] || 0.075;
+      const spec = septicRateMap[septicKey] || septicRateMap['office'];
       const area = Math.max(0, parseFloat(document.getElementById('septic_area').value) || 0);
 
       if (area <= 0) {
         size = "0 인 (산정면적 없음)";
         detail = "산정 바닥면적(㎡)을 입력해주세요.";
       } else {
-        const septicPersons = Math.ceil(area * rate);
-        const dailySewageM3 = (septicPersons * 0.2).toFixed(1);
+        const septicPersons = Math.ceil(area * spec.rate);
+        const dailySewageM3 = spec.isResidential
+          ? (septicPersons * 0.2)
+          : ((area * spec.sewageLPerM2) / 1000);
+        const sewageBasisText = spec.isResidential
+          ? `산정인원 ${formatNum(septicPersons)}인 × 200 L/인·일 (실제 설계 시 거실수 식 N=2.7+(R-2)×0.5 적용)`
+          : `${formatNum(area)}㎡ × ${spec.sewageLPerM2} L/㎡·일 (고시 별표 기준)`;
 
-        size = `정화조 처리대상: ${formatNum(septicPersons)} 인용 (${formatDec(dailySewageM3, 1)} ㎥/일)`;
-        detail = `[정화조 처리용량 산정: 환경부 고시 용도별 기준 계수 (${rate})]\n` +
+        size = `정화조 처리대상: ${formatNum(septicPersons)} 인용 (${dailySewageM3.toFixed(1)} ㎥/일)`;
+        detail = `[정화조·오수량 산정: 환경부 고시 제2025-165호 - ${spec.desc}]\n` +
                  `• 대상 바닥면적: ${formatNum(area)} ㎡\n` +
-                 `• 산출 인원수: ${formatNum(septicPersons)} 인용 (n = ${rate} × A)\n` +
-                 `• 1일 예상 오수발생량: 약 ${formatDec(dailySewageM3, 1)} ㎥/일 (1인 1일 200L 기준)`;
+                 `• 정화조 인원수: ${formatNum(septicPersons)} 인용 (N = ${spec.rate} × A)\n` +
+                 `• 1일 예상 오수발생량: 약 ${dailySewageM3.toFixed(1)} ㎥/일 [${sewageBasisText}]`;
       }
     }
 
@@ -6166,10 +6193,12 @@ if (h > 0) {
   else if (currentTab === 'fire') {
     const fireMode = document.getElementById('f_mode').value;
 
-    if (fireMode === 'water_source') {
-      const hydrantN = Math.min(5, Math.max(1, parseInt(document.getElementById('fw_hydrant_n').value) || 2));
-      const spChoice = document.getElementById('fw_sp_n').value;
+if (fireMode === 'water_source') {
       const floorType = document.getElementById('fw_floor_type').value;
+      const maxHydN = (floorType === 'low') ? 2 : 5;
+      const rawHydN = Math.max(1, parseInt(document.getElementById('fw_hydrant_n').value) || 2);
+      const hydrantN = Math.min(maxHydN, rawHydN);
+      const spChoice = document.getElementById('fw_sp_n').value;
 
       let spN = 20;
       let spRemark = "";
@@ -6307,8 +6336,11 @@ if (h > 0) {
       }
     }
 
-    else if (fireMode === 'pump') {
-      const hydN = Math.min(2, Math.max(1, parseInt(document.getElementById('fw_hydrant_n')?.value) || 2));
+else if (fireMode === 'pump') {
+      const floorType = document.getElementById('fw_floor_type')?.value || 'low';
+      const maxHydN = (floorType === 'low') ? 2 : 5;
+      const hydN = Math.min(maxHydN, Math.max(1, parseInt(document.getElementById('fw_hydrant_n')?.value) || 2));
+
       const spChoice = document.getElementById('fw_sp_n')?.value || '20_other';
       let spN = 20;
       if (spChoice === '10') spN = 10;
@@ -6340,9 +6372,10 @@ if (h > 0) {
         pumpLpmInput.value = autoFlow;
       }
 
-      const headInput = document.getElementById('f_pump_head');
+const headInput = document.getElementById('f_pump_head');
       const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
-      const bldDown = Math.max(0, parseInt(document.getElementById('main_bld_down')?.value) || 1);
+      const rawDown = parseInt(document.getElementById('main_bld_down')?.value);
+      const bldDown = isNaN(rawDown) ? 0 : Math.max(0, rawDown);
       const floorH = Math.max(2.5, parseFloat(document.getElementById('main_bld_h')?.value) || 3.0);
 
       const actualHeightM = Math.max(floorH, (bldUp + bldDown - 1) * floorH);
@@ -6362,6 +6395,9 @@ if (h > 0) {
       const eff = Math.max(0.1, parseFloat(document.getElementById('f_pump_eff').value) || 0.65);
       const k = parseFloat(document.getElementById('f_pump_k').value) || 1.15;
       
+      const stdMotors = [1.5, 2.2, 3.7, 5.5, 7.5, 11, 15, 18.5, 22, 30, 37, 45, 55, 75, 90, 110, 132, 160, 200];
+         const recMotorKw = stdMotors.find(m => m >= motorKw) || Math.ceil(motorKw);
+
       if (lpm <= 0 || head <= 0) {
         size = "0 kW (양정/토출량 계산 대기)";
         detail = `• 자동 연동 토출량: ${formatNum(lpm)} LPM (${flowSourceDesc || '소방 기준'})\n• 건물 층수 및 층고를 입력하시면 전양정이 자동 연동됩니다.`;
@@ -6378,8 +6414,10 @@ if (h > 0) {
                  ` • 법정 최소 방수압/호스손실: ${formatNum(legalReqHeadM)} m (${pumpSys === 'sp_only' ? 'SP 헤드압 0.1 MPa' : '소화전 노즐 0.17 MPa + 호스'})\n` +
                  `--------------------------------------------------\n` +
                  `• 펌프 효율: ${formatNum(Math.round(eff * 100))}% | 전달계수 K: ${formatDec(k, 2)} (전동기 구동)\n` +
-                 `• 소방 모터 소요 동력: 약 ${formatDec(motorKw, 2)} kW (약 ${formatDec(motorKw * 1.36, 1)} HP)\n` +
-                 `• 추천 모터 규격: ${formatNum(Math.ceil(motorKw / 5.5) * 5.5 > motorKw ? Math.ceil(motorKw / 5.5) * 5.5 : Math.ceil(motorKw))} kW 이상 표준 정격 전동기`;
+
+
+             `• 소방 모터 소요 동력: 약 ${motorKw.toFixed(2)} kW (약 ${(motorKw * 1.36).toFixed(1)} PS)\n` +
+                      `• 추천 모터 규격: ${recMotorKw} kW 이상 표준 정격 전동기`;
       }
     }
 
@@ -6391,8 +6429,9 @@ if (h > 0) {
 
       const bldTotalArea = Math.max(0, parseFloat(document.getElementById('main_bld_area')?.value) || 0);
       const firstFloorArea = (floorDataList.length > 0 && floorDataList[0].area > 0) ? floorDataList[0].area : (bldTotalArea > 0 ? bldTotalArea : 500);
-      const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
-      const bldDown = Math.max(0, parseInt(document.getElementById('main_bld_down')?.value) || 1);
+const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
+      const rawDown = parseInt(document.getElementById('main_bld_down')?.value);
+      const bldDown = isNaN(rawDown) ? 0 : Math.max(0, rawDown);
       const floorH = Math.max(2.5, parseFloat(document.getElementById('main_bld_h')?.value) || 3.0);
       const bldHeight = Math.max(floorH, (bldUp + bldDown - 1) * floorH);
 
