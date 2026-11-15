@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>MEP Quant Desktop - 건축 기계설비 & 소방 엔지니어링 슈트</title>
 
-  <!-- 파비콘 -->
+  
   <link rel="icon" type="image/png" href="icon.png">
 
-<!-- SheetJS with Style (셀 서식/배경색/테두리 지원 Excel .xlsx 내보내기 라이브러리) -->
+
   <script src="https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js"></script>
 
   <style>
@@ -19,7 +19,7 @@
     }
     
 :root {
-      /* 모던 뉴트럴 & 인디고 팔레트 */
+      
       --bg-body: #f8fafc;
       --bg-grid-color: rgba(15, 23, 42, 0.04);
       --bg-grid-size: 12px;
@@ -154,7 +154,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* 상단 헤더 고정 영역 & 하단 독립 스크롤 영역 분리 */
+    
     .pc-header-wrap {
       flex-shrink: 0;
       width: 100%;
@@ -1125,7 +1125,7 @@
     }
     .font-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
 
-    /* 통합된 윈도우 공학계산기 + MEP 단위환산기 모달 스타일 */
+    
     .calc-modal-content {
       background: var(--bg-card);
       border: 1px solid var(--border-color);
@@ -1241,7 +1241,7 @@
       border-color: rgba(239, 68, 68, 0.2);
     }
 
-    /* 우측 설비 전문 단위환산기 스타일 */
+    
     .calc-pane-unit {
       display: flex;
       flex-direction: column;
@@ -1388,7 +1388,7 @@
       color: var(--primary);
     }
 
-/* © 하단 좌측 한 줄 저작권 트리거 & 팝업 안내 스타일 */
+
     .pc-copyright-footer {
       align-self: flex-start;
       display: inline-flex;
@@ -1458,7 +1458,7 @@
       line-height: 1.6;
     }
 
-    /* 📱 모바일 하단 실시간 요약 바 (데스크톱에서는 숨김) */
+    
     .mobile-sticky-bar {
       display: none;
     }
@@ -1508,7 +1508,7 @@
         max-width: 96vw !important;
       }
 
-      /* 모바일/태블릿 하단 고정 결과 요약 바 활성화 */
+      
       .mobile-sticky-bar {
         display: flex;
         position: fixed;
@@ -1634,7 +1634,7 @@
         grid-template-columns: 1fr;
         gap: 10px;
       }
-      /* 모바일에서 면적/인원(2열) 및 층수/층고(3열) 컴팩트 그리드 배치 */
+      
       .bld-grid-pc > .bld-col:nth-child(2) {
         display: grid;
         grid-template-columns: 1fr 1fr;
@@ -1755,7 +1755,7 @@
 </head>
 <body class="theme-dark">
 
-<!-- 🚀 시작 전 프로그램 안내 인트로 오버레이 -->
+
   <div id="introNoticeOverlay" class="intro-backdrop">
     <div class="intro-modal-card">
       <div class="intro-header">
@@ -1779,7 +1779,7 @@
     </div>
   </div>
 
-<!-- 🌐 상단 데스크톱 네비게이션 헤더 (하단과 분리된 고정 영역) -->
+
 <div class="pc-header-wrap">
   <div class="pc-header-inner">
     <header class="pc-header">
@@ -1813,11 +1813,11 @@
   </div>
 </div>
 
-<!-- 🖥️ 하단 독립 스크롤 작업 영역 -->
+
 <div class="pc-lower-wrap">
 <div class="pc-app-container">
 
-  <!-- 🏢 대상물 기본 건축정보 마스터 카드 -->
+  
   <div class="main-bld-card">
     <div class="bld-header" onclick="toggleBldCard()">
       <div class="bld-header-left">
@@ -1829,7 +1829,7 @@
 
     <div id="mainBldBody">
       <div class="bld-grid-pc">
-        <!-- 1열: 주용도 및 상세 공간 구분 (대한설비공학회 SAREK 기준) -->
+        
         <div class="bld-col">
           <div class="bld-field">
             <label class="clickable-label" onclick="openModal('guide_bld_occ_modal')">
@@ -1868,7 +1868,7 @@
           </div>
         </div>
 
-<!-- 2열: 면적 및 수용인원 -->
+
         <div class="bld-col">
           <div class="bld-field">
             <label>건물 연면적 (㎡)</label>
@@ -1880,7 +1880,7 @@
           </div>
         </div>
 
-        <!-- 3열: 층수 및 층고 -->
+        
         <div class="bld-col">
           <div class="bld-field">
             <label>지상 층수 (층)</label>
@@ -1896,7 +1896,7 @@
           </div>
         </div>
 
-        <!-- 4열: 층별 면적 구성 테이블 -->
+        
         <div class="bld-col">
           <div class="floor-area-box-pc">
             <div class="floor-area-header">
@@ -1913,7 +1913,7 @@
     </div>
   </div>
 
-  <!-- 5대 설비 탭 + 윈도우 계산기 팝업 버튼 -->
+  
   <nav class="pc-tab-bar">
     <button class="tab-btn active" id="tab_hvac" onclick="switchTab('hvac')">🔥/❄️ 냉난방</button>
     <button class="tab-btn" id="tab_duct" onclick="switchTab('duct')">💨 공조 및 환기덕트</button>
@@ -1923,12 +1923,12 @@
     <button type="button" class="tab-btn tab-btn-popup" onclick="openCalcModal()">🔢 계산기/단위환산</button>
   </nav>
 
-<!-- 🖥️ PC 듀얼 스플릿 작업 영역 -->
+
   <div class="pc-workspace-split">
-    <!-- 좌측 작업창: 파라미터 입력 및 서브 모드 -->
+    
     <main class="panels-container" id="panelsWrapper">
 
-      <!-- 1. 냉난방 패널 -->
+      
       <section id="panel-hvac" class="panel active">
         <div class="mode-select-wrap">
           <label class="mode-select-label">
@@ -1948,7 +1948,7 @@
           </div>
         </div>
 
-        <!-- 1-1. 장비선정용 열원 용량 (대한설비공학회 SAREK 핸드북 기준) -->
+        
         <div id="box_hvac_equip" class="sub-calc-box">
           <div class="sub-calc-title">
             <span>🔥/❄️ 열원 장비 용량 산출 (대한설비공학회 SAREK 핸드북 / KDS 31 20)</span>
@@ -2022,7 +2022,7 @@
           </div>
         </div>
 
-        <!-- 1-2. FCU 모델 선정 -->
+        
         <div id="box_hvac_fcu" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🌀 팬코일유니트(FCU) 용량 및 표준 모델 선정</span>
@@ -2117,7 +2117,7 @@
           </div>
         </div>
 
-        <!-- 1-3. 냉온수 순환수배관 산정 -->
+        
         <div id="box_hvac_water" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>💧 냉온수 순환수배관 관경 산정</span>
@@ -2172,7 +2172,7 @@
           </div>
         </div>
 
-        <!-- 1-4. FCU 응축수 드레인 배관 산정 -->
+        
         <div id="box_hvac_fcu_drain" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🚿 FCU 응축수 드레인 배관경 산정</span>
@@ -2190,7 +2190,7 @@
               </div>
             </div>
 
-            <!-- 1. 부하량 기준 -->
+            
             <div id="drain_track_load" class="input-grid-6col" style="width: 100%;">
               <div class="input-group">
                 <label>냉방 부하 단위</label>
@@ -2208,7 +2208,7 @@
               </div>
             </div>
 
-            <!-- 2. FCU 대수 기준 -->
+            
             <div id="drain_track_count" class="input-grid-6col" style="width: 100%; display: none;">
               <div class="input-group">
                 <label>연결 FCU 수량 (대)</label>
@@ -2237,7 +2237,7 @@
           </div>
         </div>
 
-        <!-- 1-5. 순환펌프 양정 및 용량 -->
+        
         <div id="box_hvac_pump" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>⚙️ 냉온수 순환펌프 용량 및 양정 산출</span>
@@ -2266,7 +2266,7 @@
           </div>
         </div>
 
-        <!-- 1-6. 스팀보일러 증기 & 응축수관 -->
+        
         <div id="box_hvac_steam" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>💨 스팀보일러 증기 공급관 & 응축수 환수관 산정</span>
@@ -2299,7 +2299,7 @@
           </div>
         </div>
 
-        <!-- 1-7. 밀폐식 팽창탱크 -->
+        
         <div id="box_hvac_exp" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🛡️ 밀폐식 팽창탱크(Expansion Tank) 용량 (KDS 31 25)</span>
@@ -2333,7 +2333,7 @@
         </div>
       </section>
 
-      <!-- 2. 공조덕트 패널 -->
+      
       <section id="panel-duct" class="panel">
         <div class="mode-select-wrap">
           <label class="mode-select-label">
@@ -2498,7 +2498,7 @@
         </div>
       </section>
 
-      <!-- 3. 위생 패널 -->
+      
       <section id="panel-water" class="panel">
         <div class="mode-select-wrap">
           <label class="mode-select-label">
@@ -2523,7 +2523,7 @@
           </div>
         </div>
 
-<!-- 3-1. 급수/급탕 배관경 -->
+
         <div id="box_san_pipe" class="sub-calc-box">
           <div class="sub-calc-title">
             <label class="clickable-label" onclick="openModal('guide_san_pipe_modal')">
@@ -2540,7 +2540,7 @@
           </div>
         </div>
 
-        <!-- 3-2. 물탱크 용량 -->
+        
         <div id="box_san_tank" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <label class="clickable-label" onclick="openModal('guide_san_tank_modal')">
@@ -2607,7 +2607,7 @@
           </div>
         </div>
 
-        <!-- 3-3. 가압 펌프 -->
+        
         <div id="box_san_pump" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <label class="clickable-label" onclick="openModal('guide_san_pump_modal')">
@@ -2645,7 +2645,7 @@
           </div>
         </div>
 
-        <!-- 3-4. 급탕 가열기 -->
+        
         <div id="box_san_heater" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <label class="clickable-label" onclick="openModal('guide_san_heater_modal')">
@@ -2750,7 +2750,7 @@
           </div>
         </div>
 
-        <!-- 3-5. 오수 배관경 산출 -->
+        
         <div id="box_drain_soil" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🚽 오수 배관경 산출 (대변기·소변기 전용 DFU)</span>
@@ -2772,7 +2772,7 @@
           </div>
         </div>
 
-<!-- 3-6. 배수(잡배수) 배관경 산출 -->
+
         <div id="box_drain_waste" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🚿 배수(잡배수) 배관경 산출 (세면·욕조·주방·청소싱크 DFU)</span>
@@ -2795,7 +2795,7 @@
           </div>
         </div>
 
-<!-- 3-7. 우수 배관경 & 루프드레인 -->
+
         <div id="box_drain_rain" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🌧️ 우수(빗물) 배관경 & 루프드레인 산정 (KDS 31 30)</span>
@@ -2815,7 +2815,7 @@
           </div>
         </div>
 
-        <!-- 3-8. 정화조 인원산정 -->
+        
         <div id="box_drain_septic" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🧪 정화조·오수처리시설 인원산정 (환경부 고시)</span>
@@ -2841,7 +2841,7 @@
         </div>
       </section>
 
-      <!-- 4. 가스 패널 -->
+      
       <section id="panel-gas" class="panel">
         <div class="mode-select-wrap">
           <label class="mode-select-label">
@@ -2907,7 +2907,7 @@
         </div>
       </section>
 
-      <!-- 5. 소방 패널 -->
+      
       <section id="panel-fire" class="panel">
         <div class="mode-select-wrap">
           <label class="mode-select-label">
@@ -2926,7 +2926,7 @@
           </div>
         </div>
 
-        <!-- 5-1. 법정 소방시설 진단 -->
+        
         <div id="box_fire_bld" class="sub-calc-box">
           <div class="sub-calc-title">
             <span>🏢 대상물 건축 정보 확인 (소방시설법 시행령 [별표 4])</span>
@@ -2958,7 +2958,7 @@
           </div>
         </div>
 
- <!-- 5-2. 소방 배관경 -->
+ 
         <div id="box_fire_pipe" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🚒 소방 배관경 산출 (스프링클러·소화전·연결송수관 개별 입력)</span>
@@ -2970,7 +2970,7 @@
           </div>
           </div>
 
-        <!-- 5-3. 소화기구 -->
+        
         <div id="box_fire_ext" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🧯 소화기구 설치기준 및 능력단위 설정 (NFPC 101)</span>
@@ -3016,7 +3016,7 @@
           </div>
         </div>
 
-        <!-- 5-4. 소방 수원 유효수량 -->
+        
         <div id="box_fire_water_source" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🚒 소방 수원 유효수량 계산 (NFPC 102/103)</span>
@@ -3050,7 +3050,7 @@
           </div>
         </div>
 
-        <!-- 5-5. 소방펌프 산출 -->
+        
         <div id="box_fire_pump" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>⚙️ 소방펌프 전동기 동력 및 양정 산출</span>
@@ -3099,7 +3099,7 @@
           </div>
         </div>
 
-        <!-- 5-6. 제연 송풍기 산출 -->
+        
         <div id="box_fire_smoke_fan" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>💨 제연 송풍기(Fan) 풍량 및 축동력 산출 (NFPC 501/501A)</span>
@@ -3136,14 +3136,14 @@
         </div>
       </section>
 
-      <!-- 필수 수기입력 범례 표시 -->
+      
       <div id="manualReqLegend" class="manual-req-legend">
         <div class="manual-req-sample">0</div>
         <span class="manual-req-legend-text">필수 수기입력</span>
       </div>
     </main>
 
-    <!-- 우측 고정창: 실시간 추천 규격 & 상세 산출 결과 & 법정 지침 -->
+    
     <aside class="pc-sticky-sidebar">
       <div class="result-box-pc" id="resultBox">
         <div class="result-header">
@@ -3157,7 +3157,7 @@
         <div class="sub-info" id="detailResult">-</div>
       </div>
 
-      <!-- 패널별 설계 기준 가이드 박스 -->
+      
       <div id="guide_hvac" class="guide-box-pc" style="display: block;">
         <strong>📌 냉난방 배관 및 펌프 설계 기준 (대한설비공학회 SAREK / KDS 표준)</strong>
         <ul>
@@ -3206,7 +3206,7 @@
     </aside>
   </div>
 
-<!-- © 하단 좌측 저작권 안내 클릭 트리거 -->
+
   <footer class="pc-copyright-footer" onclick="openModal('copyrightModal')" title="클릭하여 저작권 및 이용 제한 안내 보기">
     <span class="copyright-trigger-title">🛡️ 저작권 및 이용 제한 안내</span>
     <span class="copyright-trigger-meta">© 2026 MEP Quant Desktop. All Rights Reserved.</span>
@@ -3214,7 +3214,7 @@
 </div>
 </div>
 
-<!-- 📱 모바일/태블릿 전용 하단 실시간 요약 바 -->
+
 <div class="mobile-sticky-bar" id="mobileStickyBar">
   <div class="mobile-sticky-info">
     <span class="mobile-sticky-label">⚡ 실시간 추천 규격</span>
@@ -3225,7 +3225,7 @@
     <button type="button" class="mobile-sticky-btn primary" onclick="scrollToResult()">상세결과 ▼</button>
   </div>
 </div>
-<!-- 🏢 모달: 건물 기본정보 및 수용인원 산정 기준 -->
+
 <div id="guide_bld_occ_modal" class="modal-backdrop" onclick="closeModal('guide_bld_occ_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3255,7 +3255,7 @@
   </div>
 </div>
 
-<!-- 🔥 모달: 장비선정용 열원 용량 산출 기준 -->
+
 <div id="guide_hvac_equip_modal" class="modal-backdrop" onclick="closeModal('guide_hvac_equip_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3277,7 +3277,7 @@
   </div>
 </div>
 
-<!-- 🌀 모달: FCU 모델 선정 및 엔지니어링 규격 기준 -->
+
 <div id="guide_fcu_modal" class="modal-backdrop" onclick="closeModal('guide_fcu_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3299,7 +3299,7 @@
   </div>
 </div>
 
-<!-- 💧 모달: 냉온수 순환수배관 산정 기준 -->
+
 <div id="guide_hvac_water_modal" class="modal-backdrop" onclick="closeModal('guide_hvac_water_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3327,7 +3327,7 @@
   </div>
 </div>
 
-<!-- 🚿 모달: FCU 드레인 배관 산정 기준 -->
+
 <div id="guide_fcu_drain_modal" class="modal-backdrop" onclick="closeModal('guide_fcu_drain_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3356,7 +3356,7 @@
   </div>
 </div>
 
-<!-- ⚙️ 모달: 냉온수 순환펌프 설계 기준 -->
+
 <div id="guide_hvac_pump_modal" class="modal-backdrop" onclick="closeModal('guide_hvac_pump_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3377,7 +3377,7 @@
   </div>
 </div>
 
-<!-- 💨 모달: 스팀보일러 증기 및 응축수관 기준 -->
+
 <div id="guide_hvac_steam_modal" class="modal-backdrop" onclick="closeModal('guide_hvac_steam_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3396,7 +3396,7 @@
   </div>
 </div>
 
-<!-- 🛡️ 모달: 밀폐식 팽창탱크 용량 산정 기준 -->
+
 <div id="guide_hvac_exp_modal" class="modal-backdrop" onclick="closeModal('guide_hvac_exp_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3418,7 +3418,7 @@
   </div>
 </div>
 
-<!-- 📐 모달: 공조 환기 룸 크기 및 용도 기준 -->
+
 <div id="guide_duct_room_modal" class="modal-backdrop" onclick="closeModal('guide_duct_room_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3445,7 +3445,7 @@
   </div>
 </div>
 
-<!-- 🌀 모달: 환기팬/송풍기 동력 산출 기준 -->
+
 <div id="guide_duct_fan_modal" class="modal-backdrop" onclick="closeModal('guide_duct_fan_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3466,7 +3466,7 @@
   </div>
 </div>
 
-<!-- 🔲 모달: 외기/배기 루버 규격 산출 기준 -->
+
 <div id="guide_duct_louver_modal" class="modal-backdrop" onclick="closeModal('guide_duct_louver_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3485,7 +3485,7 @@
   </div>
 </div>
 
-<!-- 📐 모달: 덕트 규격 및 종횡비 기준 -->
+
 <div id="guide_duct_size_modal" class="modal-backdrop" onclick="closeModal('guide_duct_size_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3503,7 +3503,7 @@
   </div>
 </div>
 
-<!-- 🚰 모달: 위생 급수/급탕 배관경 산정 기준 (WSFU) -->
+
 <div id="guide_san_pipe_modal" class="modal-backdrop" onclick="closeModal('guide_san_pipe_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3521,7 +3521,7 @@
   </div>
 </div>
 
-<!-- 💧 모달: 물탱크 유효용량 산정 기준 -->
+
 <div id="guide_san_tank_modal" class="modal-backdrop" onclick="closeModal('guide_san_tank_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3542,7 +3542,7 @@
   </div>
 </div>
 
-<!-- ⚙️ 모달: 부스터 펌프 계산 기준 -->
+
 <div id="guide_san_pump_modal" class="modal-backdrop" onclick="closeModal('guide_san_pump_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3560,7 +3560,7 @@
   </div>
 </div>
 
-<!-- 🔥 모달: 급탕 보일러 및 온수가열기 기준 -->
+
 <div id="guide_san_heater_modal" class="modal-backdrop" onclick="closeModal('guide_san_heater_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3580,7 +3580,7 @@
   </div>
 </div>
 
-<!-- 🚽 모달: 오수 배관경 산출 기준 -->
+
 <div id="guide_drain_soil_modal" class="modal-backdrop" onclick="closeModal('guide_drain_soil_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3598,7 +3598,7 @@
   </div>
 </div>
 
-<!-- 🚿 모달: 잡배수 배관경 산출 기준 -->
+
 <div id="guide_drain_waste_modal" class="modal-backdrop" onclick="closeModal('guide_drain_waste_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3616,7 +3616,7 @@
   </div>
 </div>
 
-<!-- 🌧️ 모달: 우수 배관경 및 루프드레인 기준 -->
+
 <div id="guide_drain_rain_modal" class="modal-backdrop" onclick="closeModal('guide_drain_rain_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3637,7 +3637,7 @@
   </div>
 </div>
 
-<!-- 🧪 모달: 정화조 인원산정 기준 -->
+
 <div id="guide_drain_septic_modal" class="modal-backdrop" onclick="closeModal('guide_drain_septic_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3655,7 +3655,7 @@
   </div>
 </div>
 
-<!-- 🔥 모달: 저압 도시가스 배관 산정 기준 -->
+
 <div id="guide_gas_pipe_modal" class="modal-backdrop" onclick="closeModal('guide_gas_pipe_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3676,7 +3676,7 @@
   </div>
 </div>
 
-<!-- ⏱️ 모달: 가스계량기 등급 선정 기준 -->
+
 <div id="guide_gas_meter_modal" class="modal-backdrop" onclick="closeModal('guide_gas_meter_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3703,7 +3703,7 @@
   </div>
 </div>
 
-<!-- 🏢 모달: 법정 소방시설 진단 기준 -->
+
 <div id="guide_fire_bld_modal" class="modal-backdrop" onclick="closeModal('guide_fire_bld_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3722,7 +3722,7 @@
   </div>
 </div>
 
-<!-- 🚒 모달: 소방 배관경 산출 기준 -->
+
 <div id="guide_fire_pipe_modal" class="modal-backdrop" onclick="closeModal('guide_fire_pipe_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3741,7 +3741,7 @@
   </div>
 </div>
 
-<!-- 🧯 모달: 소화기구 산정 기준 -->
+
 <div id="guide_fire_ext_modal" class="modal-backdrop" onclick="closeModal('guide_fire_ext_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3759,7 +3759,7 @@
   </div>
 </div>
 
-<!-- 💧 모달: 소방 수원 법정 용량 기준 -->
+
 <div id="guide_fire_water_modal" class="modal-backdrop" onclick="closeModal('guide_fire_water_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3778,7 +3778,7 @@
   </div>
 </div>
 
-<!-- ⚙️ 모달: 소방펌프 전동기 동력 기준 -->
+
 <div id="guide_fire_pump_modal" class="modal-backdrop" onclick="closeModal('guide_fire_pump_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3800,7 +3800,7 @@
   </div>
 </div>
 
-<!-- 💨 모달: 제연 송풍기 풍량 및 축동력 기준 -->
+
 <div id="guide_fire_smoke_modal" class="modal-backdrop" onclick="closeModal('guide_fire_smoke_modal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3819,7 +3819,7 @@
   </div>
 </div>
 
-<!-- 🌀 모달: 설계 기외정압(ESP) 가이드 -->
+
 <div id="espGuideModal" class="modal-backdrop" onclick="closeEspGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3855,7 +3855,7 @@
   </div>
 </div>
 
-<!-- ❄️ 모달: FCU 단위 냉방설계부하 가이드 -->
+
 <div id="fcuCoolLoadGuideModal" class="modal-backdrop" onclick="closeFcuCoolLoadGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3894,7 +3894,7 @@
   </div>
 </div>
 
-<!-- 🌀 모달: FCU 실내 현열부하 qs 가이드 -->
+
 <div id="fcuQsGuideModal" class="modal-backdrop" onclick="closeFcuQsGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3926,7 +3926,7 @@
   </div>
 </div>
 
-<!-- 💧 모달: 펌프 단위 마찰손실 (30 mmAq/m) 가이드 -->
+
 <div id="pumpFricGuideModal" class="modal-backdrop" onclick="closePumpFricGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3958,7 +3958,7 @@
   </div>
 </div>
 
-<!-- 🔄 모달: 펌프 국부저항비율 (50%) 가이드 -->
+
 <div id="pumpLocalGuideModal" class="modal-backdrop" onclick="closePumpLocalGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -3990,7 +3990,7 @@
   </div>
 </div>
 
-<!-- ⚙️ 모달: 장비(냉동기/코일) 저항 (10 m) 가이드 -->
+
 <div id="pumpEquipGuideModal" class="modal-backdrop" onclick="closePumpEquipGuideModal(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -4026,7 +4026,7 @@
 </div>
 
 
-<!-- 📖 모달: 사용자 설명서 & 상세 설계지침서 (Engineering Handbook) -->
+
 <div id="manualModal" class="modal-backdrop" onclick="closeManual(event)">
   <div class="modal-content manual-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -4035,7 +4035,7 @@
     </div>
     
     <div class="manual-body">
-      <!-- 1. 총론 및 공통 연동 체계 -->
+      
       <div class="manual-sec">
         <h4>1. 총론 및 스마트 크로스 연동 체계 (Cross-Discipline Sync)</h4>
         <p>본 엔지니어링 슈트는 <b>대한설비공학회(SAREK) 실무 핸드북</b>, 국토교통부 <b>국가건설기준(KDS)</b>, 소방청 <b>화재안전성능기준(NFPC)</b> 및 한국가스안전공사 <b>KGS Code</b>를 상호 연동하여 하나의 대상물 기본 건축정보(용도, 연면적, 층수, 층고, 수용인원)로부터 기계설비 및 방재 22개 세부 공종의 용량과 규격을 자동 동기화합니다.</p>
@@ -4046,7 +4046,7 @@
         </ul>
       </div>
 
-      <!-- 2. 냉난방 및 열원 장비 설계 지침 -->
+      
       <div class="manual-sec">
         <h4>2. 냉난방 및 중앙 열원 장비 설계 지침 [SAREK 핸드북 / KDS 31 20]</h4>
       <h5>(1) 피크부하(Peak Load) 산정식 및 장비 용량 환산 공식</h5>
@@ -4253,7 +4253,7 @@
         </div>
       </div>
 
-      <!-- 3. 공조 및 환기덕트 설계 지침 -->
+      
       <div class="manual-sec">
         <h4>3. 공조 및 환기덕트 설계 지침 (KDS 31 25 20)</h4>
              <h5>(1) 덕트 단면 산출(풍속법 / 등마찰 손실 기준)</h5>
@@ -4290,7 +4290,7 @@
         </div>
       </div>
 
-      <!-- 4. 위생 급수·급탕 및 오배수·정화조 지침 -->
+      
       <div class="manual-sec">
         <h4>4. 위생 급수·급탕 및 오배수·정화조 설계 지침 [KDS 31 30]</h4>
         <h5>(1) 기구급수부하단위(WSFU) & Hunter 동시사용 유량</h5>
@@ -4360,7 +4360,7 @@
         </div>
       </div>
 
-      <!-- 5. 도시가스 설비 설계 지침 -->
+      
       <div class="manual-sec">
         <h4>5. 도시가스 설비 설계 지침 [KGS Code FU551 / Pole 공식]</h4>
         <h5>(1) 저압 도시가스 유량 및 배관경 산출 (Pole Formula)</h5>
@@ -4392,7 +4392,7 @@
         </table>
       </div>
 
-      <!-- 6. 소방방재설비 화재안전성능기준 -->
+      
       <div class="manual-sec">
         <h4>6. 소방방재설비 화재안전성능기준 [소방시설법 / NFPC 101~502]</h4>
         <h5>(1) 법정 소방 수원(유효저수량) 산정식 [NFPC 102/103/604]</h5>
@@ -4469,7 +4469,7 @@
         </ul>
       </div>
 
-      <!-- 7. 엔지니어링 실무 고지 및 기술 한계 안내 -->
+      
       <div class="manual-sec">
         <h4>7. 엔지니어링 실무 고지 및 기술 한계 안내 (Engineering Notice)</h4>
         <p>본 엔지니어링 도구의 산출 결과는 <b>대한설비공학회(SAREK) 실무 핸드북</b>, 대한민국 <b>국가건설기준(KDS)</b>, 소방청 <b>화재안전성능기준(NFPC)</b> 및 <b>KGS Code</b>에 근거한 <b>기술적 권장 사양</b>입니다.<br><br>
@@ -4480,7 +4480,7 @@
   </div>
 </div>
 
-<!-- ⚙️ 모달: 환경설정 모달 -->
+
 <div id="settingsModal" class="modal-backdrop" onclick="closeSettings(event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -4510,7 +4510,7 @@
   </div>
 </div>
 
-<!-- 🛡️ 모달: 저작권 및 이용 제한 안내 -->
+
 <div id="copyrightModal" class="modal-backdrop" onclick="closeModal('copyrightModal', event)">
   <div class="modal-content" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -4538,7 +4538,7 @@
   </div>
 </div>
 
-<!-- 📥 모달: 웹 버전 결과값 저장 안내 모달 -->
+
 <div id="webSaveNoticeModal" class="modal-backdrop" onclick="closeModal('webSaveNoticeModal', event)">
   <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
     <div class="modal-header">
@@ -4553,10 +4553,10 @@
   </div>
 </div>
 
-<!-- 🔢 모달: 통합 와이드 공학계산기 & 설비 전용 단위환산기 -->
+
 <div id="calcModal" class="modal-backdrop" onclick="closeCalcModal(event)">
   <div class="calc-modal-content" onclick="event.stopPropagation()">
-    <!-- 윈도우 헤더 타이틀 바 -->
+    
     <div class="calc-window-header">
       <span class="calc-window-title">
         <span>🔢 MEP 공학용 계산기 & 설비 전용 단위환산기 (Engineering Converter)</span>
@@ -4564,9 +4564,9 @@
       <button type="button" class="modal-close-btn" style="font-size: 20px; line-height: 1;" onclick="closeCalcModal()">&times;</button>
     </div>
 
-    <!-- 좌우 통합 와이드 2열 레이아웃 -->
+    
     <div class="calc-wide-layout">
-      <!-- [좌측] 윈도우 공학용 계산기 -->
+      
       <div class="calc-pane-sci">
         <div class="calc-screen">
           <div class="calc-top-bar">
@@ -4624,9 +4624,9 @@
         </button>
       </div>
 
-      <!-- [우측] MEP 설비 전문 다항목 단위환산기 -->
+      
       <div class="calc-pane-unit">
-        <!-- 9대 설비 카테고리 탭 버튼 -->
+        
         <div class="mep-unit-tabs">
           <button type="button" class="mep-unit-tab-btn active" onclick="switchMepUnitCategory('pressure', this)">압력 (Pressure)</button>
           <button type="button" class="mep-unit-tab-btn" onclick="switchMepUnitCategory('flow', this)">유량 (Flow Rate)</button>
@@ -4639,17 +4639,17 @@
           <button type="button" class="mep-unit-tab-btn" onclick="switchMepUnitCategory('volume', this)">체적 (Vol)</button>
         </div>
 
-        <!-- 기준값 입력 및 단위 선택부 -->
+        
         <div class="mep-converter-body">
           <div class="mep-row-input">
             <input type="number" id="mep_input_val" value="1" step="any" oninput="runMepConvert()">
             <select id="mep_input_unit" onchange="runMepConvert()"></select>
           </div>
 
-          <!-- 실시간 전 단위 동시 환산 출력 그리드 -->
+          
           <div class="mep-output-list" id="mep_output_container"></div>
 
-          <!-- 실무 퀵 참조 칩 -->
+          
           <div class="mep-quick-grid">
             <div class="mep-quick-chip">1 USRT = <strong>3,024</strong> kcal/h</div>
             <div class="mep-quick-chip">1 bar = <strong>10,197</strong> mmAq</div>
@@ -4664,9 +4664,9 @@
   </div>
 </div>
 <script>
-// ----------------------------------------------------
-// 🚀 인트로 실무 고지 닫기 제어 함수
-// ----------------------------------------------------
+
+
+
 function closeIntroNotice() {
   const introEl = document.getElementById('introNoticeOverlay');
   if (introEl) {
@@ -4674,9 +4674,9 @@ function closeIntroNotice() {
   }
 }
 
-// ----------------------------------------------------
-// 🌐 범용 모달 팝업 열기/닫기 제어 함수 (전 항목 신규 모달 지원)
-// ----------------------------------------------------
+
+
+
 function openModal(modalId) {
   const el = document.getElementById(modalId);
   if (el) el.classList.add('open');
@@ -4689,9 +4689,9 @@ function closeModal(modalId, e) {
   }
 }
 
-// ----------------------------------------------------
-// 🔍 각 패널 세부 항목 모드 가이드 바로가기 함수
-// ----------------------------------------------------
+
+
+
 function openHvacModeGuide() {
   const m = document.getElementById('hvac_calc_mode')?.value || 'equip';
   const map = {
@@ -4754,9 +4754,9 @@ function openFireModeGuide() {
   openModal(map[m] || 'guide_fire_bld_modal');
 }
 
-// ----------------------------------------------------
-// 🌐 전역 상태 및 탭 정의
-// ----------------------------------------------------
+
+
+
 let currentTab = 'hvac';
 let isManualTotalArea = false;
 const tabKeys = ['hvac', 'duct', 'water', 'gas', 'fire'];
@@ -4765,7 +4765,7 @@ let floorDataList = [
   { id: 1, startFloor: 1, endFloor: 1, area: 0 }
 ];
 
-// 🌀 FCU 표준 공학 규격 데이터베이스 (범용 사양)
+
 const fcuCatalog = [
   { cfm: 300,  model: "300 CFM 표준형", coolKw: 3.4,  coolKcal: 2920,  heatKw: 4.8,  heatKcal: 4130,  cmh: 510,  pipe: "20A (3/4\")", drain: "20A", lpm: 9.8 },
   { cfm: 400,  model: "400 CFM 표준형", coolKw: 4.6,  coolKcal: 3950,  heatKw: 6.4,  heatKcal: 5500,  cmh: 680,  pipe: "20A (3/4\")", drain: "25A", lpm: 13.2 },
@@ -4776,22 +4776,22 @@ const fcuCatalog = [
   { cfm: 1400, model: "1400 CFM 표준형", coolKw: 15.8, coolKcal: 13580, heatKw: 22.1, heatKcal: 19000, cmh: 2380, pipe: "32A (1 1/4\")", drain: "25A", lpm: 45.3 }
 ];
 
-// 🔥 대한설비공학회 (SAREK) 핸드북 및 설계 가이드 값 기준 15대 건물 주용도·공간별 데이터베이스
+
 const eqPeakLoadMap = {
-  // 1. 업무시설
+  
   office_gen:   { coolW: 291, coolKcal: 250, heatKcal: 150, steamKg: 0.25, areaPer: 9.5,  name: "일반 사무소 (오피스)" },
   office_pub:   { coolW: 233, coolKcal: 200, heatKcal: 140, steamKg: 0.22, areaPer: 12.5, name: "관공서 / 공공업무" },
-  // 2. 교육연구시설
+  
   edu_univ:     { coolW: 209, coolKcal: 180, heatKcal: 150, steamKg: 0.25, areaPer: 15.0, name: "대학교 / 대학원" },
   edu_school:   { coolW: 221, coolKcal: 190, heatKcal: 160, steamKg: 0.25, areaPer: 7.5,  name: "초·중·고등학교" },
   edu_lib:      { coolW: 233, coolKcal: 200, heatKcal: 150, steamKg: 0.25, areaPer: 6.5,  name: "도서관 / 열람실" },
-  // 3. 숙박시설
+  
   hotel_gen:    { coolW: 209, coolKcal: 180, heatKcal: 200, steamKg: 0.50, areaPer: 12.5, name: "호텔 / 여관 / 모텔" },
   hotel_dorm:   { coolW: 174, coolKcal: 150, heatKcal: 170, steamKg: 0.30, areaPer: 10.0, name: "기숙사" },
-  // 4. 판매/영업시설
+  
   retail_dept:  { coolW: 407, coolKcal: 350, heatKcal: 180, steamKg: 0.35, areaPer: 4.5,  name: "백화점 / 대형마트" },
   retail_shop:  { coolW: 349, coolKcal: 300, heatKcal: 160, steamKg: 0.25, areaPer: 6.5,  name: "일반 상점 / 매장" },
-  // 5. 문화/집회 및 기타
+  
   culture_hall: { coolW: 523, coolKcal: 450, heatKcal: 200, steamKg: 0.60, areaPer: 1.0,  name: "공연장 / 영화관 / 교회" },
   hospital_gen: { coolW: 291, coolKcal: 250, heatKcal: 280, steamKg: 0.70, areaPer: 7.5,  name: "종합병원 / 진료소" },
   comm_gen:     { coolW: 302, coolKcal: 260, heatKcal: 160, steamKg: 0.25, areaPer: 6.5,  name: "근린생활시설 (상가/학원)" },
@@ -4826,7 +4826,7 @@ function formatDec(num, digits = 1) {
   return clean.toLocaleString(undefined, { maximumFractionDigits: digits });
 }
 
-// 콤마(,)가 포함된 문자열도 정상 숫자로 연산되도록 오버라이드
+
 const _origParseFloat = window.parseFloat;
 const _origParseInt = window.parseInt;
 window.parseFloat = function(val) {
@@ -4838,7 +4838,7 @@ window.parseInt = function(val, radix) {
   return _origParseInt(val, radix);
 };
 
-// 입력창 타이핑 시 천단위 콤마 자동 서식 함수
+
 function formatInputWithComma(input) {
   if (!input || input.tagName !== 'INPUT') return;
   const cursor = input.selectionStart;
@@ -4859,9 +4859,9 @@ function formatInputWithComma(input) {
   }
 }
 
-// ----------------------------------------------------
-// 🏢 대상물 기본 정보 & 층별 면적 관리
-// ----------------------------------------------------
+
+
+
 let isBldFolded = false;
 
 function toggleBldCard() {
@@ -4927,9 +4927,9 @@ function getFloorCount(start, end) {
   const min = Math.min(start, end);
   const max = Math.max(start, end);
   if (min < 0 && max > 0) {
-    return (0 - min) + max; // 지하와 지상에 걸친 경우 (0층 제외)
+    return (0 - min) + max; 
   } else {
-    return max - min + 1;   // 일반적인 경우
+    return max - min + 1;   
   }
 }
 
@@ -5016,7 +5016,7 @@ function syncBuildingInfo(isOccDirect = false) {
   });
 
   if (row1F && row1F.area > 0) {
-    firstFloorArea = row1F.area; // 지상 1층의 층당 면적
+    firstFloorArea = row1F.area; 
   } else if (floorDataList.length > 0 && floorDataList[0].area > 0) {
     firstFloorArea = floorDataList[0].area;
   } else {
@@ -5071,7 +5071,7 @@ function syncBuildingInfo(isOccDirect = false) {
     else hValEl.value = formatNum(estUsrt);
   }
 
-  // 🚿 FCU 응축수 드레인 부하량 자동 연동
+  
   const drainValEl = document.getElementById('drain_load_val');
   if (drainValEl) {
     const drainUnit = document.getElementById('drain_load_unit')?.value || 'usrt';
@@ -5093,7 +5093,7 @@ const hpLpmEl = document.getElementById('hp_lpm'); if (hpLpmEl) hpLpmEl.value = 
   const expVolEl = document.getElementById('exp_water_vol'); if (expVolEl) expVolEl.value = formatNum(estExpWaterVol);
 
 
-// 🚰 가압(부스터) 펌프 전양정 건축높이 실시간 동기화
+
   const pumpHeadEl = document.getElementById('pump_head');
   if (pumpHeadEl && (!pumpHeadEl.value || pumpHeadEl.value === "0")) {
     const curUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value) || 1);
@@ -5104,7 +5104,7 @@ const hpLpmEl = document.getElementById('hp_lpm'); if (hpLpmEl) hpLpmEl.value = 
     pumpHeadEl.value = Math.ceil(curActualH + (curActualH * 0.25) + 15);
   }
 
-  // 🚒 소방펌프 토출량 및 전양정 건축정보와 실시간 동기화
+  
   const fPumpLpmEl = document.getElementById('f_pump_lpm');
   if (fPumpLpmEl && (!fPumpLpmEl.value || fPumpLpmEl.value === "0")) {
     fPumpLpmEl.value = 1600;
@@ -5172,9 +5172,9 @@ const fPumpHeadEl = document.getElementById('f_pump_head');
   calculate();
 }
 
-// ----------------------------------------------------
-// 🔀 탭 전환 제어 함수
-// ----------------------------------------------------
+
+
+
 function switchTab(tabKey) {
   currentTab = tabKey;
   tabKeys.forEach(k => {
@@ -5188,9 +5188,9 @@ function switchTab(tabKey) {
   calculate();
 }
 
-// ----------------------------------------------------
-// 🚿 FCU 응축수 드레인 모드 전환
-// ----------------------------------------------------
+
+
+
 function updateDrainModeUI() {
   const mode = document.getElementById('drain_calc_mode').value;
   const loadTrack = document.getElementById('drain_track_load');
@@ -5200,9 +5200,9 @@ function updateDrainModeUI() {
   calculate();
 }
 
-// ----------------------------------------------------
-// ⚙️ 이벤트 리스너 및 동적 UI 토글
-// ----------------------------------------------------
+
+
+
 document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[type="number"]').forEach(input => {
     input.type = 'text';
@@ -5257,7 +5257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const isIntroOpen = intro && intro.style.display !== 'none' && !intro.classList.contains('hidden');
     const openModalEl = document.querySelector('.modal-backdrop.open');
 
-    // 🔢 계산기 모달 열림 상태 키보드 입력 처리
+    
     if (openModalEl && openModalEl.id === 'calcModal') {
       const isInputActive = ['INPUT', 'SELECT', 'TEXTAREA'].includes(e.target.tagName);
       if (!isInputActive) {
@@ -5313,7 +5313,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // 냉난방 세부 모드 선택 이벤트
+  
   const hvacModeSel = document.getElementById('hvac_calc_mode');
   if (hvacModeSel) {
     hvacModeSel.addEventListener('change', (e) => {
@@ -5524,9 +5524,9 @@ function updateHwNModeUI() {
   calculate();
 }
 
-// -----------------------------------------------------------------------------------
-// 🧮 핵심 엔지니어링 계산 알고리즘 실행 함수
-// -----------------------------------------------------------------------------------
+
+
+
 function calculate() {
   let size = "-";
   let detail = "-";
@@ -5534,7 +5534,7 @@ function calculate() {
   if (currentTab === 'hvac') {
     const mode = document.getElementById('hvac_calc_mode').value;
 
-    // 1-1. 장비선정용 열원 용량 산출
+    
     if (mode === 'equip') {
       const area = Math.max(0, parseFloat(document.getElementById('eq_area').value) || 0);
       const uCoolKcal = parseFloat(document.getElementById('eq_unit_cool').value) || 0;
@@ -5581,7 +5581,7 @@ function calculate() {
       }
     }
 
-    // 1-2. FCU 모델 선정
+    
     else if (mode === 'fcu') {
       const fcuType = document.getElementById('fcu_model_type').value;
       const fcuMode = document.getElementById('fcu_calc_type').value;
@@ -5684,7 +5684,7 @@ function calculate() {
        }
     }
 
-    // 1-3. 냉온수 순환수배관 관경 산정
+    
     else if (mode === 'water') {
       const hUnit = document.getElementById('h_unit').value;
       const rawHVal = parseFloat(document.getElementById('h_val').value) || 0;
@@ -5746,7 +5746,7 @@ function calculate() {
       }
     }
 
-    // 1-4. FCU 응축수 드레인 배관 산정
+    
     else if (mode === 'fcu_drain') {
       const drainMode = document.getElementById('drain_calc_mode').value;
       const slope = document.getElementById('drain_slope').value || '100';
@@ -5811,7 +5811,7 @@ function calculate() {
       }
     }
 
-    // 1-5. 순환펌프 양정 및 용량
+    
     else if (mode === 'pump') {
       const lpm = parseFloat(document.getElementById('hp_lpm').value) || 0;
       const len = parseFloat(document.getElementById('hp_len').value) || 0;
@@ -5836,7 +5836,7 @@ function calculate() {
       }
     }
 
-    // 1-6. 스팀보일러 증기 & 응축수관
+    
     else if (mode === 'steam') {
       const kgH = parseFloat(document.getElementById('h_steam_kg').value) || 0;
       const steamPress = document.getElementById('h_steam_press').value;
@@ -5868,7 +5868,7 @@ function calculate() {
       }
     }
 
-    // 1-7. 밀폐식 팽창탱크
+    
     else if (mode === 'exp_tank') {
       const vW = Math.max(parseFloat(document.getElementById('exp_water_vol').value) || 0, 0);
       const p1 = Math.max(parseFloat(document.getElementById('exp_p1').value) || 0, 0);
@@ -6813,26 +6813,26 @@ const pipeResEl = document.getElementById('pipeResult');
   }
 }
 
-// ----------------------------------------------------
-// 📱 모바일 상세 결과 스크롤 이동 함수
-// ----------------------------------------------------
+
+
+
 function scrollToResult() {
   const el = document.getElementById('resultBox');
   if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-// ----------------------------------------------------
-// 📋 클립보드 복사 함수
-// ----------------------------------------------------
+
+
+
 function copyResult() {
   const resultText = `[산출 결과]\n추천 규격: ${document.getElementById('pipeResult').innerText}\n${document.getElementById('detailResult').innerText}`;
   navigator.clipboard.writeText(resultText).then(() => alert("산출 결과가 클립보드에 복사되었습니다."));
 }
 
 
-// ----------------------------------------------------
-// 🔢 윈도우 계산기 및 MEP 전용 단위환산기 제어 함수
-// ----------------------------------------------------
+
+
+
 let calcExpr = "";
 let isDegMode = true;
 
@@ -7155,9 +7155,9 @@ function copyMepValue(val) {
   });
 }
 
-// ----------------------------------------------------
-// 📖 기존 모달 및 테마/글자크기 설정 제어 함수
-// ----------------------------------------------------
+
+
+
 function openEspGuideModal() { const el = document.getElementById('espGuideModal'); if(el) el.classList.add('open'); }
 function closeEspGuideModal(e) { if(!e || e.target.id === 'espGuideModal') { const el = document.getElementById('espGuideModal'); if(el) el.classList.remove('open'); } }
 
