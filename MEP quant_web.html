@@ -794,13 +794,49 @@
       outline: none;
       transition: all 0.15s ease;
     }
-    .ctrl-input-wrap input:focus {
+.ctrl-input-wrap input:focus {
       border-color: var(--input-focus-border);
       box-shadow: 0 0 0 3px var(--primary-glow);
     }
     .ctrl-input-wrap input.highlight {
       background-color: #fef08a !important;
       color: #0f172a !important;
+    }
+    .ctrl-input-wrap input.manual-req {
+      background-color: rgba(245, 158, 11, 0.10);
+      border: 1.5px solid rgba(245, 158, 11, 0.65);
+      border-left: 4px solid #f59e0b;
+    }
+   .ctrl-input-wrap input.manual-req:focus {
+      border-color: #fbbf24;
+      box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.18);
+    }
+    .manual-req-legend {
+      display: none;
+      align-items: center;
+      gap: 12px;
+      margin-top: -14px;
+      padding: 2px 4px;
+    }
+    .manual-req-legend.visible {
+      display: flex;
+    }
+    .manual-req-sample {
+      width: 110px;
+      padding: 6px 11px;
+      border-radius: 7px;
+      text-align: right;
+      font-size: calc(12.5px * var(--font-scale));
+      background-color: rgba(245, 158, 11, 0.10);
+      border: 1.5px solid rgba(245, 158, 11, 0.65);
+      border-left: 4px solid #f59e0b;
+      color: var(--text-muted);
+      user-select: none;
+    }
+    .manual-req-legend-text {
+      font-size: calc(12.5px * var(--font-scale));
+      font-weight: 700;
+      color: var(--text-main);
     }
     .ctrl-select-wrap {
       width: 220px;
@@ -1350,6 +1386,76 @@
     }
     .mep-quick-chip strong {
       color: var(--primary);
+    }
+
+/* © 하단 좌측 한 줄 저작권 트리거 & 팝업 안내 스타일 */
+    .pc-copyright-footer {
+      align-self: flex-start;
+      display: inline-flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      padding: 4px 2px 8px 2px;
+      font-size: calc(12px * var(--font-scale));
+      cursor: pointer;
+      user-select: none;
+    }
+    .copyright-trigger-title {
+      font-weight: 800;
+      color: var(--text-main);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: color 0.15s ease;
+    }
+    .pc-copyright-footer:hover .copyright-trigger-title {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+    .copyright-trigger-meta {
+      color: var(--text-sub);
+      font-weight: 500;
+    }
+    .copyright-badge {
+      font-size: 10.5px;
+      font-weight: 800;
+      padding: 2.5px 9px;
+      border-radius: var(--radius-pill);
+      background: rgba(239, 68, 68, 0.12);
+      color: #dc2626;
+      border: 1px solid rgba(239, 68, 68, 0.35);
+      letter-spacing: 0.03em;
+    }
+    body.theme-dark .copyright-badge {
+      color: #f87171;
+    }
+    .copyright-modal-box {
+      background: var(--bg-sub);
+      border: 1px solid var(--border-color);
+      border-left: 4px solid #ef4444;
+      border-radius: var(--radius-inner);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      font-size: calc(12.5px * var(--font-scale));
+      line-height: 1.65;
+      color: var(--text-main);
+    }
+    .copyright-warn {
+      color: #dc2626;
+      font-weight: 800;
+    }
+    body.theme-dark .copyright-warn {
+      color: #fca5a5;
+    }
+    .copyright-en {
+      font-size: calc(12px * var(--font-scale));
+      color: var(--text-sub);
+      padding-top: 10px;
+      border-top: 1px dashed var(--border-color);
+      line-height: 1.6;
     }
 
     /* 📱 모바일 하단 실시간 요약 바 (데스크톱에서는 숨김) */
@@ -1947,9 +2053,9 @@
             </div>
             <div id="fcu_input_load" class="input-group full">
               <div class="input-grid-6col" style="width: 100%;">
-                <div class="input-group">
+<div class="input-group">
                   <label>적용 구역 면적 (㎡) <span style="color:var(--primary); font-size:11px;">[실 면적 입력]</span></label>
-                  <div class="ctrl-input-wrap"><input type="number" id="fcu_load_area" placeholder="0" value="" min="0"></div>
+                  <div class="ctrl-input-wrap"><input type="number" id="fcu_load_area" class="manual-req" placeholder="0" value="" min="0"></div>
                 </div>
                 <div class="input-group">
                   <label class="clickable-label" onclick="openFcuCoolLoadGuideModal()">단위 냉방 설계부하 (kcal/h·㎡) <span class="info-icon">ℹ️</span></label>
@@ -2143,7 +2249,7 @@
             </div>
             <div class="input-group">
               <label>배관 직관길이 (m) [편도]</label>
-              <div class="ctrl-input-wrap"><input type="number" id="hp_len" placeholder="0" min="0"></div>
+              <div class="ctrl-input-wrap"><input type="number" id="hp_len" class="manual-req" placeholder="0" min="0"></div>
             </div>
             <div class="input-group">
               <label class="clickable-label" onclick="openPumpFricGuideModal()">단위 마찰손실 (mmAq/m) <span class="info-icon">ℹ️</span></label>
@@ -2250,8 +2356,8 @@
           </div>
           <div class="input-grid-6col">
             <div class="input-group">
-              <label>바닥 면적 (㎡) <span style="color:var(--primary); font-size:11px;">[1F 연동]</span></label>
-              <div class="ctrl-input-wrap"><input type="number" id="room_area" placeholder="0" min="0"></div>
+              <label>바닥 면적 (㎡)</label>
+              <div class="ctrl-input-wrap"><input type="number" id="room_area" class="manual-req" placeholder="0" min="0"></div>
             </div>
             <div class="input-group">
               <label>천장 높이 (m)</label>
@@ -2291,7 +2397,7 @@
           </div>
           <div class="input-group">
             <label>설계 풍량 (CMH, m³/h)</label>
-            <div class="ctrl-input-wrap"><input type="number" id="duct_cmh" placeholder="0" min="0"></div>
+            <div class="ctrl-input-wrap"><input type="number" id="duct_cmh" class="manual-req" placeholder="0" min="0"></div>
           </div>
         </div>
 
@@ -2323,14 +2429,14 @@
           </div>
         </div>
 
-        <div id="box_duct_louver" class="sub-calc-box" style="display: none;">
+<div id="box_duct_louver" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🔲 외기(OA) / 배기(EA) 루버 규격 산출</span>
           </div>
           <div class="input-grid-6col">
             <div class="input-group">
-              <label>설계 풍량 (CMH) <span style="color:var(--primary); font-size:11px;">[자동연동]</span></label>
-              <div class="ctrl-input-wrap"><input type="number" id="louver_cmh" placeholder="0" min="0"></div>
+              <label>설계 풍량 (CMH)</label>
+              <div class="ctrl-input-wrap"><input type="number" id="louver_cmh" class="manual-req" placeholder="0" min="0"></div>
             </div>
             <div class="input-group">
               <label class="clickable-label" onclick="openModal('guide_duct_louver_modal')">
@@ -2382,7 +2488,7 @@
             </div>
             <div class="input-group">
               <label>세로 높이 H (mm 입력)</label>
-              <div class="ctrl-input-wrap"><input type="number" id="duct_h" placeholder="0" min="0" step="50"></div>
+              <div class="ctrl-input-wrap"><input type="number" id="duct_h" class="manual-req" placeholder="0" min="0" step="50"></div>
             </div>
             <div class="input-group">
               <label>가로 폭 W (자동 계산 mm)</label>
@@ -2423,14 +2529,14 @@
             <label class="clickable-label" onclick="openModal('guide_san_pipe_modal')">
             🚰 급수/급탕 배관경 산출 (기구단위 WSFU 기반) <span class="info-icon">ℹ️</span>
           </div>
-          <div class="input-grid-6col">
+<div class="input-grid-6col">
             <div class="input-group">
             <label>세면기/씽크대 (급수 2 FU)</span>
-            </label><div class="ctrl-input-wrap"><input type="number" id="w_wash" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>샤워기/욕조/세탁기 (급수 3 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_shower" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>대변기-세척밸브 (급수 10 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_wc_valve" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>대변기-로탱크 (급수 3 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_wc_tank" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>소변기 (급수 5 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_urinal" placeholder="0" min="0"></div></div>
+            </label><div class="ctrl-input-wrap"><input type="number" id="w_wash" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>샤워기/욕조/세탁기 (급수 3 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_shower" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>대변기-세척밸브 (급수 10 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_wc_valve" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>대변기-로탱크 (급수 3 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_wc_tank" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>소변기 (급수 5 FU)</label><div class="ctrl-input-wrap"><input type="number" id="w_urinal" class="manual-req" placeholder="0" min="0"></div></div>
           </div>
         </div>
 
@@ -2676,7 +2782,7 @@
             <label>세면기/바닥드레인 (2 DFU)<span style="color:var(--primary); font-size:11px;">[급수 연동]</span></label>
             <div class="ctrl-input-wrap"><input type="number" id="d_waste_wash" placeholder="0" min="0"></div></div>
             <div class="input-group"><label>샤워기/욕조/주방씽크/세탁기 (3 DFU) <span style="color:var(--primary); font-size:11px;">[급수 연동]</span></label><div class="ctrl-input-wrap"><input type="number" id="d_waste_bath" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label style="color:#ef4444; font-weight:bold;">청소싱크 (3 DFU) [최소 75A 규칙]</label><div class="ctrl-input-wrap"><input type="number" id="d_waste_sink" placeholder="0" min="0"></div></div>
+  <div class="input-group"><label style="color:#ef4444; font-weight:bold;">청소싱크 (3 DFU) [최소 75A 규칙]</label><div class="ctrl-input-wrap"><input type="number" id="d_waste_sink" class="manual-req" placeholder="0" min="0"></div></div>
             <div class="input-group">
               <label>배관 설치 물매 (구배)</label>
               <div class="ctrl-select-wrap">
@@ -2689,13 +2795,13 @@
           </div>
         </div>
 
-        <!-- 3-7. 우수 배관경 & 루프드레인 -->
+<!-- 3-7. 우수 배관경 & 루프드레인 -->
         <div id="box_drain_rain" class="sub-calc-box" style="display: none;">
           <div class="sub-calc-title">
             <span>🌧️ 우수(빗물) 배관경 & 루프드레인 산정 (KDS 31 30)</span>
           </div>
           <div class="input-grid-6col">
-            <div class="input-group"><label>지붕 수압 투영면적 (㎡) <span style="color:var(--primary); font-size:11px;">[1F 연동]</span></label><div class="ctrl-input-wrap"><input type="number" id="rain_area" placeholder="0" min="0"></div></div>
+          <div class="input-group"><label>지붕 수압 투영면적 (㎡)</label><div class="ctrl-input-wrap"><input type="number" id="rain_area" class="manual-req" placeholder="0" min="0"></div></div>
             <div class="input-group">
               <label class="clickable-label" onclick="openModal('guide_drain_rain_modal')">설계 강우강도 (mm/h) <span class="info-icon">ℹ️</span></label>
               <div class="ctrl-select-wrap">
@@ -2857,12 +2963,12 @@
           <div class="sub-calc-title">
             <span>🚒 소방 배관경 산출 (스프링클러·소화전·연결송수관 개별 입력)</span>
           </div>
-          <div class="input-grid-6col">
-            <div class="input-group"><label class="clickable-label" onclick="openModal('guide_fire_pipe_modal')">스프링클러 헤드 수 (개) <span class="info-icon">ℹ️</span></label><div class="ctrl-input-wrap"><input type="number" id="f_sp_count" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>옥내소화전 방수구 수 (개소)</label><div class="ctrl-input-wrap"><input type="number" id="f_hyd_count" placeholder="0" min="0"></div></div>
-            <div class="input-group"><label>연결송수관 방수구 수 (개소)</label><div class="ctrl-input-wrap"><input type="number" id="f_spipe_count" placeholder="0" min="0"></div></div>
+<div class="input-grid-6col">
+            <div class="input-group"><label class="clickable-label" onclick="openModal('guide_fire_pipe_modal')">스프링클러 헤드 수 (개) <span class="info-icon">ℹ️</span></label><div class="ctrl-input-wrap"><input type="number" id="f_sp_count" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>옥내소화전 방수구 수 (개소)</label><div class="ctrl-input-wrap"><input type="number" id="f_hyd_count" class="manual-req" placeholder="0" min="0"></div></div>
+            <div class="input-group"><label>연결송수관 방수구 수 (개소)</label><div class="ctrl-input-wrap"><input type="number" id="f_spipe_count" class="manual-req" placeholder="0" min="0"></div></div>
           </div>
-        </div>
+          </div>
 
         <!-- 5-3. 소화기구 -->
         <div id="box_fire_ext" class="sub-calc-box" style="display: none;">
@@ -3029,6 +3135,12 @@
           </div>
         </div>
       </section>
+
+      <!-- 필수 수기입력 범례 표시 -->
+      <div id="manualReqLegend" class="manual-req-legend">
+        <div class="manual-req-sample">0</div>
+        <span class="manual-req-legend-text">필수 수기입력</span>
+      </div>
     </main>
 
     <!-- 우측 고정창: 실시간 추천 규격 & 상세 산출 결과 & 법정 지침 -->
@@ -3082,7 +3194,7 @@
         </ul>
       </div>
 
-      <div id="guide_fire" class="guide-box-pc" style="display: none;">
+<div id="guide_fire" class="guide-box-pc" style="display: none;">
         <strong>📌 소방 수원 / 펌프 / 제연 법정 기준 (NFPC)</strong>
         <ul>
           <li><b>소방펌프:</b> 동력 계산식 P = (Q × H × 0.163 × K) / η 적용</li>
@@ -3093,6 +3205,12 @@
       </div>
     </aside>
   </div>
+
+<!-- © 하단 좌측 저작권 안내 클릭 트리거 -->
+  <footer class="pc-copyright-footer" onclick="openModal('copyrightModal')" title="클릭하여 저작권 및 이용 제한 안내 보기">
+    <span class="copyright-trigger-title">🛡️ 저작권 및 이용 제한 안내</span>
+    <span class="copyright-trigger-meta">© 2026 MEP Quant Desktop. All Rights Reserved.</span>
+  </footer>
 </div>
 </div>
 
@@ -4392,6 +4510,34 @@
   </div>
 </div>
 
+<!-- 🛡️ 모달: 저작권 및 이용 제한 안내 -->
+<div id="copyrightModal" class="modal-backdrop" onclick="closeModal('copyrightModal', event)">
+  <div class="modal-content" onclick="event.stopPropagation()">
+    <div class="modal-header">
+      <h3 style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+        <span>🛡️ 저작권 및 이용 제한 안내</span>
+        <span class="copyright-badge">ALL RIGHTS RESERVED</span>
+      </h3>
+      <button type="button" class="modal-close-btn" onclick="closeModal('copyrightModal')">&times;</button>
+    </div>
+    <div class="copyright-modal-box">
+      <div>
+        본 프로그램(<strong>MEP Quant Desktop</strong>)의 소스 코드, 공학 계산 알고리즘, UI 디자인 및 모든 산출 체계는 저작권법의 보호를 받습니다.<br><br>
+        <span class="copyright-warn">⚠️ 저작권자의 사전 서면 허가 없이 본 소프트웨어 및 코드의 무단 복제, 수정(개작), 재배포, 상업적 이용 및 역설계를 엄격히 금지합니다.</span>
+      </div>
+      <div class="copyright-en">
+        <strong>COPYRIGHT &amp; PROHIBITION NOTICE</strong><br>
+        This software (<strong>MEP Quant Desktop</strong>), including its source code, engineering algorithms, UI design, and documentation, is protected by copyright laws and international treaties.<br><br>
+        <span class="copyright-warn">Unauthorized copying, reproduction, modification, reverse engineering, or redistribution in whole or in part without prior written permission is strictly prohibited.</span>
+      </div>
+    </div>
+    <div style="margin-top: 10px; font-size: calc(11.5px * var(--font-scale)); color: var(--text-sub); text-align: right; font-weight: 700;">
+      © 2026 MEP Quant Desktop. All Rights Reserved.
+    </div>
+    <button type="button" class="manual-confirm-btn" onclick="closeModal('copyrightModal')">확인 (닫기)</button>
+  </div>
+</div>
+
 <!-- 📥 모달: 웹 버전 결과값 저장 안내 모달 -->
 <div id="webSaveNoticeModal" class="modal-backdrop" onclick="closeModal('webSaveNoticeModal', event)">
   <div class="modal-content" style="max-width: 520px;" onclick="event.stopPropagation()">
@@ -4896,8 +5042,7 @@ function syncBuildingInfo(isOccDirect = false) {
     fcuSimpleRate.value = closestVal;
   }
 
-  const roomArea = document.getElementById('room_area'); if(roomArea) roomArea.value = formatNum(firstFloorArea);
-  const rainArea = document.getElementById('rain_area'); if(rainArea) rainArea.value = formatNum(firstFloorArea);
+ const roomArea = document.getElementById('room_area'); if(roomArea) roomArea.value = formatNum(firstFloorArea);
   const fcuSimpleArea = document.getElementById('fcu_simple_area'); if(fcuSimpleArea) fcuSimpleArea.value = formatNum(firstFloorArea);
   const hwArea = document.getElementById('hw_area'); if(hwArea) hwArea.value = formatNum(totalArea);
   const fbldArea = document.getElementById('f_bld_area'); if(fbldArea) fbldArea.value = formatNum(totalArea);
@@ -4908,9 +5053,14 @@ function syncBuildingInfo(isOccDirect = false) {
   const totalCoolKw = (totalCoolKcal * 1.163) / 1000;
   const estUsrt = Math.round(totalCoolKcal / 3024);
   const estLpm = Math.round(estUsrt * 14.3);
+
   const estSteam = Math.round(totalArea * matchedPreset.steamKg * 1.15);
   const estGasMcal = Math.round((totalArea * (matchedPreset.heatKcal + 20) * 1.15) / 1000);
-  const estRoomCmh = Math.round(firstFloorArea * 2.7 * 5);
+  const roomHeightVal = Math.max(0, parseFloat(document.getElementById('room_height')?.value) || 0);
+  const roomAchVal = Math.max(0, parseFloat(document.getElementById('room_ach')?.value) || 0);
+  const estRoomCmh = Math.round(firstFloorArea * roomHeightVal * roomAchVal);
+  const roomCalcCmhEl = document.getElementById('room_calc_cmh');
+  if (roomCalcCmhEl) roomCalcCmhEl.value = estRoomCmh > 0 ? formatNum(estRoomCmh) : "";
   const estExpWaterVol = Math.round(totalArea * 1.5);
 
   const hValEl = document.getElementById('h_val');
@@ -4932,12 +5082,12 @@ function syncBuildingInfo(isOccDirect = false) {
     else drainValEl.value = formatNum(Math.round(zoneCoolKcal));
   }
 
-  const hpLpmEl = document.getElementById('hp_lpm'); if (hpLpmEl) hpLpmEl.value = formatNum(estLpm);
+const hpLpmEl = document.getElementById('hp_lpm'); if (hpLpmEl) hpLpmEl.value = formatNum(estLpm);
   const steamEl = document.getElementById('h_steam_kg'); if (steamEl) steamEl.value = formatNum(estSteam);
   const gMcalEl = document.getElementById('g_mcal'); if (gMcalEl) gMcalEl.value = formatNum(estGasMcal);
   const gMeterEl = document.getElementById('g_meter_val'); if (gMeterEl) gMeterEl.value = formatNum(estGasMcal * 1000);
-  const fanCmhEl = document.getElementById('fan_cmh'); if (fanCmhEl) fanCmhEl.value = formatNum(estRoomCmh);
-  const louverCmhEl = document.getElementById('louver_cmh'); if (louverCmhEl) louverCmhEl.value = formatNum(estRoomCmh);
+  const syncedRoomCmh = (roomCalcCmhEl && roomCalcCmhEl.value) ? roomCalcCmhEl.value : "0";
+  const fanCmhEl = document.getElementById('fan_cmh'); if (fanCmhEl) fanCmhEl.value = syncedRoomCmh;
 
   const pumpFlowEl = document.getElementById('pump_flow'); if (pumpFlowEl) pumpFlowEl.value = formatNum(Math.round((parseFloat(occInput.value) || 0) * 2.5));
   const expVolEl = document.getElementById('exp_water_vol'); if (expVolEl) expVolEl.value = formatNum(estExpWaterVol);
@@ -5053,7 +5203,7 @@ function updateDrainModeUI() {
 // ----------------------------------------------------
 // ⚙️ 이벤트 리스너 및 동적 UI 토글
 // ----------------------------------------------------
- document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => {
   document.querySelectorAll('input[type="number"]').forEach(input => {
     input.type = 'text';
     input.setAttribute('inputmode', 'decimal');
@@ -5061,6 +5211,15 @@ function updateDrainModeUI() {
     input.addEventListener('input', (e) => {
       formatInputWithComma(e.target);
     });
+  });
+
+  document.addEventListener('focusin', (e) => {
+    const el = e.target;
+    if (el && el.tagName === 'INPUT' && !el.readOnly && (el.type === 'text' || el.type === 'number')) {
+      if (el.value.trim() === '0') {
+        el.value = '';
+      }
+    }
   });
 
   renderFloorRows();
@@ -5791,20 +5950,26 @@ function calculate() {
       let cmh = 0;
       let roomNote = "";
 
-      if (calcMode === 'room') {
+if (calcMode === 'room') {
         const area = Math.max(0, parseFloat(document.getElementById('room_area').value) || 0);
         const height = Math.max(0, parseFloat(document.getElementById('room_height').value) || 0);
         const ach = Math.max(0, parseFloat(document.getElementById('room_ach').value) || 0);
+        const roomCalcCmhEl = document.getElementById('room_calc_cmh');
+        const prevRoomCmh = roomCalcCmhEl ? roomCalcCmhEl.value : "";
 
         if (area > 0 && height > 0 && ach > 0) {
           cmh = area * height * ach;
-          document.getElementById('room_calc_cmh').value = formatNum(cmh);
+          if (roomCalcCmhEl) roomCalcCmhEl.value = formatNum(cmh);
           roomNote = `• 룸 조건: 면적 ${formatNum(area)}㎡ × 천장고 ${formatDec(height, 1)}m ➔ 풍량 ${formatNum(cmh)} CMH\n`;
         } else {
-          document.getElementById('room_calc_cmh').value = "";
+          if (roomCalcCmhEl) roomCalcCmhEl.value = "";
         }
 
-
+        const nextRoomCmh = roomCalcCmhEl ? roomCalcCmhEl.value : "";
+        if (prevRoomCmh !== nextRoomCmh) {
+          const syncedRoomCmh = nextRoomCmh || "0";
+          const fanCmhEl = document.getElementById('fan_cmh'); if (fanCmhEl) fanCmhEl.value = syncedRoomCmh;
+        }
       } else {
         cmh = Math.max(0, parseFloat(document.getElementById('duct_cmh').value) || 0);
       }
@@ -5849,10 +6014,10 @@ if (h > 0) {
     const soilWcInput = document.getElementById('d_soil_wc');
     const soilUrinalInput = document.getElementById('d_soil_urinal');
 
-   if (soilWcInput && (wcValve > 0 || wcTank > 0 || !soilWcInput.value)) {
+   if (soilWcInput && document.activeElement !== soilWcInput && (wcValve > 0 || wcTank > 0 || !soilWcInput.value)) {
       soilWcInput.value = (wcValve + wcTank) > 0 ? formatNum(wcValve + wcTank) : (soilWcInput.value || 0);
     }
-    if (soilUrinalInput && (urinalCount > 0 || !soilUrinalInput.value)) {
+    if (soilUrinalInput && document.activeElement !== soilUrinalInput && (urinalCount > 0 || !soilUrinalInput.value)) {
       soilUrinalInput.value = urinalCount > 0 ? formatNum(urinalCount) : (soilUrinalInput.value || 0);
     }
 
@@ -5862,10 +6027,10 @@ if (h > 0) {
     const wasteWashInput = document.getElementById('d_waste_wash');
     const wasteBathInput = document.getElementById('d_waste_bath');
 
-    if (wasteWashInput && (supplyWash > 0 || !wasteWashInput.value)) {
+    if (wasteWashInput && document.activeElement !== wasteWashInput && (supplyWash > 0 || !wasteWashInput.value)) {
       wasteWashInput.value = supplyWash > 0 ? formatNum(supplyWash) : (wasteWashInput.value || 0);
     }
-    if (wasteBathInput && (supplyShower > 0 || !wasteBathInput.value)) {
+    if (wasteBathInput && document.activeElement !== wasteBathInput && (supplyShower > 0 || !wasteBathInput.value)) {
       wasteBathInput.value = supplyShower > 0 ? formatNum(supplyShower) : (wasteBathInput.value || 0);
     }
 
@@ -6450,7 +6615,7 @@ else if (fireMode === 'pump') {
         flowSourceDesc = `옥내소화전 전용 (방수구 ${formatNum(hydN)}개소 × 130 LPM)`;
       }
 
-      if (pumpSys !== 'custom' && pumpLpmInput) {
+     if (pumpSys !== 'custom' && pumpLpmInput && document.activeElement !== pumpLpmInput) {
         pumpLpmInput.value = autoFlow;
       }
 
@@ -6634,12 +6799,18 @@ const bldUp = Math.max(1, parseInt(document.getElementById('main_bld_up')?.value
     }
   }
 
-  const pipeResEl = document.getElementById('pipeResult');
+const pipeResEl = document.getElementById('pipeResult');
   const detailResEl = document.getElementById('detailResult');
   const mobilePipeEl = document.getElementById('mobilePipeResult');
   if (pipeResEl) pipeResEl.innerText = size;
   if (detailResEl) detailResEl.innerText = detail;
   if (mobilePipeEl) mobilePipeEl.innerText = size.replace(/\n/g, ' | ');
+
+  const manualLegendEl = document.getElementById('manualReqLegend');
+  if (manualLegendEl) {
+    const hasVisibleManualReq = Array.from(document.querySelectorAll('#panelsWrapper input.manual-req')).some(el => el.offsetParent !== null);
+    manualLegendEl.classList.toggle('visible', hasVisibleManualReq);
+  }
 }
 
 // ----------------------------------------------------
